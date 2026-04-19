@@ -1,0 +1,186 @@
+---
+agent_id: "{{agentId}}"
+display_name: "{{displayName}}"
+version: "{{version}}"
+description: "{{description}}"
+type: "{{agentType}}"
+confidence_threshold: {{confidenceThreshold}}
+---
+
+# {{displayName}}
+
+## What this is
+
+{{description}}
+
+This agent is designed to {{agentTypeDescription}}. It follows the AGENTS.md specification and can be validated using agents-md-kit.
+
+## Architecture Overview
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   Incoming      │────▶│    {{displayName}}│────▶│    Response     │
+│   Request       │     │    Processing    │     │    Generation   │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
+                               │
+                               ▼
+                      ┌──────────────────┐
+                      │    Skill         │
+                      │    Execution     │
+                      └──────────────────┘
+```
+
+### Key Components
+
+| Component | Description |
+|-----------|-------------|
+| **Request Handler** | Receives and validates incoming requests |
+| **Skill Router** | Routes to appropriate skills based on intent |
+| **{{displayName}}** | Core processing logic |
+| **Response Generator** | Formats and returns results |
+
+## Skill System
+
+{{agentType}} agents use the following skills:
+
+| Skill ID | File | Description |
+|----------|------|-------------|
+| `{{skillId}}` | `skills/{{skillId}}/skill.md` | Primary skill for {{displayName}} |
+
+## MCP Integration
+
+This agent exposes the following MCP tools:
+
+### Tools
+
+| Tool | Input Schema | Output | Description |
+|------|-------------|--------|-------------|
+| `process` | `z.object({ input: z.string() })` | `{ result: string }` | Main processing endpoint |
+
+### Example Request
+
+```json
+{
+  "name": "process",
+  "arguments": {
+    "input": "example input"
+  }
+}
+```
+
+### Example Response
+
+```json
+{
+  "result": "processed output"
+}
+```
+
+## Agent Configuration
+
+| Environment Variable | Description | Default |
+|---------------------|-------------|---------|
+| `LOG_LEVEL` | Logging level (debug, info, warn, error) | `info` |
+| `CONFIDENCE_THRESHOLD` | Minimum confidence for responses | `0.8` |
+| `TIMEOUT_MS` | Request timeout in milliseconds | `30000` |
+
+## Security Considerations
+
+### PII Handling
+
+- **Never** log or store PII data
+- Use placeholder values in examples (e.g., `user-123`)
+- Sanitize all user inputs before processing
+- Implement rate limiting to prevent abuse
+
+### Authentication
+
+- All MCP tools require valid authentication
+- Use API keys or OAuth tokens as appropriate
+- Validate permissions before executing sensitive operations
+
+## Error Handling
+
+| Error Type | Recovery Strategy |
+|------------|-------------------|
+| Input validation failure | Return descriptive error with suggestions |
+| Skill execution failure | Retry with backoff, then escalate |
+| Timeout | Return partial results if available |
+| Rate limit exceeded | Queue request and process when available |
+
+## Observability
+
+### Structured Logging
+
+All operations are logged with structured JSON:
+
+```json
+{
+  "timestamp": "2026-04-15T23:00:00Z",
+  "service": "{{agentId}}",
+  "operation": "process",
+  "duration_ms": 45,
+  "success": true
+}
+```
+
+### Metrics
+
+| Metric | Type | Description |
+|--------|------|-------------|
+| `{{agentId}}.requests.total` | Counter | Total requests processed |
+| `{{agentId}}.requests.duration_ms` | Histogram | Request latency |
+| `{{agentId}}.errors.total` | Counter | Total errors |
+
+### Tracing
+
+OpenTelemetry spans are created for each request with full context propagation.
+
+## Testing
+
+### Unit Tests
+
+```bash
+npm test
+```
+
+### Integration Tests
+
+```bash
+npm run test:integration
+```
+
+## Deployment
+
+### Local Development
+
+```bash
+npm install
+npm run dev
+```
+
+### Production
+
+```bash
+npm run build
+npm start
+```
+
+## Checklist: Production Readiness
+
+- [ ] All required sections present and documented
+- [ ] Skills directory contains all referenced skill files
+- [ ] Security section documents PII handling
+- [ ] Observability section documents logging approach
+- [ ] Error handling covers all failure modes
+- [ ] Tests pass with >80% coverage
+- [ ] No secrets or sensitive data in code or config
+- [ ] Environment variables documented
+- [ ] Rate limiting implemented
+- [ ] Health check endpoint available
+
+## References
+
+- [AGENTS.md Specification](https://github.com/anomalyco/agents-md-kit)
+- [MCP Protocol](https://modelcontextprotocol.io/)
+- [Skill Development Guide](./skills/{{skillId}}/skill.md)
