@@ -7,10 +7,7 @@ import type { Section, ErrorLocation } from '../types/domain.js';
 /**
  * Extract sections from markdown content
  */
-export function extractSections(
-  content: string,
-  lineOffset: number = 0
-): Section[] {
+export function extractSections(content: string, lineOffset: number = 0): Section[] {
   const lines = content.split('\n');
   const sections: Section[] = [];
   const headingStack: { section: Section; level: number }[] = [];
@@ -96,7 +93,9 @@ export function extractSections(
 function setEndLines(sections: Section[], maxLine: number): void {
   for (let i = 0; i < sections.length; i++) {
     const section = sections[i];
-    if (!section) {continue;}
+    if (!section) {
+      continue;
+    }
 
     if (section.subsections.length > 0) {
       // End line is the end of the last subsection
@@ -123,12 +122,9 @@ function setEndLines(sections: Section[], maxLine: number): void {
 /**
  * Find a section by title (case-insensitive)
  */
-export function findSection(
-  sections: Section[],
-  title: string
-): Section | undefined {
+export function findSection(sections: Section[], title: string): Section | undefined {
   const lowerTitle = title.toLowerCase();
-  
+
   for (const section of sections) {
     if (section.title.toLowerCase() === lowerTitle) {
       return section;
@@ -138,28 +134,31 @@ export function findSection(
       return found;
     }
   }
-  
+
   return undefined;
 }
 
 /**
  * Find a section by path (e.g., "Architecture Overview/Skill System")
  */
-export function findSectionByPath(
-  sections: Section[],
-  path: string[]
-): Section | undefined {
-  if (path.length === 0) {return undefined;}
+export function findSectionByPath(sections: Section[], path: string[]): Section | undefined {
+  if (path.length === 0) {
+    return undefined;
+  }
 
   const [first, ...rest] = path;
-  if (first === undefined) {return undefined;}
+  if (first === undefined) {
+    return undefined;
+  }
 
-  const section = sections.find(
-    (s) => s.title.toLowerCase() === first.toLowerCase()
-  );
+  const section = sections.find((s) => s.title.toLowerCase() === first.toLowerCase());
 
-  if (!section) {return undefined;}
-  if (rest.length === 0) {return section;}
+  if (!section) {
+    return undefined;
+  }
+  if (rest.length === 0) {
+    return section;
+  }
 
   return findSectionByPath(section.subsections, rest);
 }
@@ -190,19 +189,14 @@ export function flattenSectionTitles(sections: Section[]): string[] {
 export function hasSection(sections: Section[], title: string): boolean {
   const lowerTitle = title.toLowerCase();
   return sections.some(
-    (s) =>
-      s.title.toLowerCase() === lowerTitle ||
-      hasSection(s.subsections, title)
+    (s) => s.title.toLowerCase() === lowerTitle || hasSection(s.subsections, title),
   );
 }
 
 /**
  * Get sections at a specific level
  */
-export function getSectionsAtLevel(
-  sections: Section[],
-  level: number
-): Section[] {
+export function getSectionsAtLevel(sections: Section[], level: number): Section[] {
   const result: Section[] = [];
 
   function process(sections: Section[]) {

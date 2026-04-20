@@ -18,7 +18,9 @@ const headingOrderRule: LintRule = (document) => {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i] ?? '';
     const match = line.match(/^(#{1,6})\s/);
-    if (!match) {continue;}
+    if (!match) {
+      continue;
+    }
 
     const currentLevel = (match[1] as string).length;
 
@@ -194,7 +196,9 @@ const listFormatRule: LintRule = (document) => {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i] ?? '';
     const match = line.match(/^(\s*)([-*+])\s/);
-    if (!match) { continue; }
+    if (!match) {
+      continue;
+    }
 
     const marker = match[2] as string;
 

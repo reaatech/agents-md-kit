@@ -7,7 +7,9 @@ import type { LintResult, ValidationResult, Finding } from '../types/domain.js';
 const shouldColor = process.stdout.isTTY !== true && process.env.FORCE_COLOR === undefined;
 
 function colorize(code: string, text: string): string {
-  if (shouldColor) { return text; }
+  if (shouldColor) {
+    return text;
+  }
   return `${code}${text}${colors.reset}`;
 }
 
@@ -108,8 +110,13 @@ export function reportLintResult(result: LintResult, options?: { verbose?: boole
     lines.push('');
   }
 
-  const status = result.errorCount === 0 ? colorize(colors.green, '\u2713 Passed') : colorize(colors.red, '\u2717 Failed');
-  lines.push(`${status} - ${result.errorCount} errors, ${result.warningCount} warnings, ${info.length} info`);
+  const status =
+    result.errorCount === 0
+      ? colorize(colors.green, '\u2713 Passed')
+      : colorize(colors.red, '\u2717 Failed');
+  lines.push(
+    `${status} - ${result.errorCount} errors, ${result.warningCount} warnings, ${info.length} info`,
+  );
 
   if (result.fixableCount > 0) {
     lines.push(colorize(colors.gray, `\u{1F4A1} ${result.fixableCount} issues can be auto-fixed`));
@@ -171,7 +178,7 @@ export function reportValidationResult(result: ValidationResult): string {
 export function reportScaffoldResult(
   created: string[],
   skipped: string[],
-  errors: Array<{ path: string; error: string }>
+  errors: Array<{ path: string; error: string }>,
 ): string {
   const lines: string[] = [];
 
@@ -204,7 +211,9 @@ export function reportScaffoldResult(
   }
 
   const total = created.length + skipped.length + errors.length;
-  lines.push(`Total: ${total} files - ${created.length} created, ${skipped.length} skipped, ${errors.length} errors`);
+  lines.push(
+    `Total: ${total} files - ${created.length} created, ${skipped.length} skipped, ${errors.length} errors`,
+  );
 
   return lines.join('\n');
 }

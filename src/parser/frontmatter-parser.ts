@@ -96,10 +96,7 @@ export function extractFrontmatter(content: string): FrontmatterResult {
 /**
  * Normalize parsed YAML to ParsedFrontmatter structure
  */
-function normalizeFrontmatter(
-  yaml: Record<string, unknown>,
-  raw: string
-): ParsedFrontmatter {
+function normalizeFrontmatter(yaml: Record<string, unknown>, raw: string): ParsedFrontmatter {
   // Handle both agent_id and skill_id
   const id = (yaml.agent_id ?? yaml.skill_id ?? yaml.id ?? '') as string;
   const display_name = (yaml.display_name ?? yaml.displayName ?? '') as string;
@@ -123,12 +120,10 @@ function normalizeFrontmatter(
  * Validate frontmatter structure
  */
 export function validateFrontmatterStructure(
-  frontmatter: ParsedFrontmatter | null
+  frontmatter: ParsedFrontmatter | null,
 ): Array<{ field: string; valid: boolean; message: string }> {
   if (!frontmatter) {
-    return [
-      { field: 'frontmatter', valid: false, message: 'No frontmatter found' },
-    ];
+    return [{ field: 'frontmatter', valid: false, message: 'No frontmatter found' }];
   }
 
   const issues: Array<{ field: string; valid: boolean; message: string }> = [];
@@ -199,7 +194,10 @@ function escapeYamlString(value: string): string {
   return `"${value}"`;
 }
 
-export function createFrontmatter(values: Partial<ParsedFrontmatter>, isSkill: boolean = false): string {
+export function createFrontmatter(
+  values: Partial<ParsedFrontmatter>,
+  isSkill: boolean = false,
+): string {
   const idKey = isSkill ? 'skill_id' : 'agent_id';
   const entries: string[] = [];
 
@@ -232,12 +230,8 @@ export function createFrontmatter(values: Partial<ParsedFrontmatter>, isSkill: b
 /**
  * Update frontmatter in existing markdown content
  */
-export function updateFrontmatter(
-  content: string,
-  updates: Partial<ParsedFrontmatter>
-): string {
-  const { frontmatter, contentWithoutFrontmatter } =
-    extractFrontmatter(content);
+export function updateFrontmatter(content: string, updates: Partial<ParsedFrontmatter>): string {
+  const { frontmatter, contentWithoutFrontmatter } = extractFrontmatter(content);
 
   const merged: Partial<ParsedFrontmatter> = {
     ...frontmatter,

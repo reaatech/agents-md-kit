@@ -21,7 +21,9 @@ describe('utils', () => {
     });
 
     it('should throw with stringified object', () => {
-      expect(() => assertNever({ key: 'value' } as never)).toThrow('Unexpected value: {"key":"value"}');
+      expect(() => assertNever({ key: 'value' } as never)).toThrow(
+        'Unexpected value: {"key":"value"}',
+      );
     });
   });
 
@@ -102,7 +104,9 @@ describe('utils', () => {
   describe('debounce', () => {
     it('should delay function execution', async () => {
       let callCount = 0;
-      const fn = debounce(() => { callCount++; }, 50);
+      const fn = debounce(() => {
+        callCount++;
+      }, 50);
 
       fn();
       fn();
@@ -116,7 +120,9 @@ describe('utils', () => {
 
     it('should pass arguments to debounced function', async () => {
       let lastArg: unknown = 0;
-      const fn = debounce((arg: unknown) => { lastArg = arg; }, 50);
+      const fn = debounce((arg: unknown) => {
+        lastArg = arg;
+      }, 50);
 
       fn(42);
       await delay(60);

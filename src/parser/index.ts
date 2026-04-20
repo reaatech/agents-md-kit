@@ -30,9 +30,7 @@ export {
 } from './section-extractor.js';
 
 // Re-export findSection as findSectionByTitle from section-extractor to avoid collision
-export {
-  findSection as findSectionByTitle,
-} from './section-extractor.js';
+export { findSection as findSectionByTitle } from './section-extractor.js';
 
 // Table parser
 export {

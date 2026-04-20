@@ -4,11 +4,7 @@
 
 import { writeFile } from 'fs/promises';
 import { Command } from 'commander';
-import {
-  pathIsDirectory,
-  validateDirectory,
-  validateFile,
-} from '../cli-utils.js';
+import { pathIsDirectory, validateDirectory, validateFile } from '../cli-utils.js';
 import { reportValidationResult as reportConsoleValidation } from '../../reporter/console-reporter.js';
 import { reportValidationResult as reportJsonValidation } from '../../reporter/json-reporter.js';
 import { reportValidationResult as reportMarkdownValidation } from '../../reporter/markdown-reporter.js';
@@ -22,29 +18,34 @@ export function validateCommand(program: Command): void {
     .option('-f, --format <format>', 'Output format (console, json, markdown)', 'console')
     .option('-o, --output <file>', 'Write the report to a file instead of stdout')
     .option('--strict', 'Treat warnings as errors', false)
-    .action(async (targetPath: string, options: {
-      format: Exclude<OutputFormat, 'html'>;
-      output?: string;
-      strict: boolean;
-    }) => {
-      const results = await collectValidationResults(targetPath, options.strict);
-      const output = formatValidationResults(results, options.format);
+    .action(
+      async (
+        targetPath: string,
+        options: {
+          format: Exclude<OutputFormat, 'html'>;
+          output?: string;
+          strict: boolean;
+        },
+      ) => {
+        const results = await collectValidationResults(targetPath, options.strict);
+        const output = formatValidationResults(results, options.format);
 
-      if (options.output !== undefined) {
-        await writeFile(options.output, output, 'utf-8');
-      } else {
-        process.stdout.write(`${output}\n`);
-      }
+        if (options.output !== undefined) {
+          await writeFile(options.output, output, 'utf-8');
+        } else {
+          process.stdout.write(`${output}\n`);
+        }
 
-      if (results.some((result) => !result.valid)) {
-        process.exit(1);
-      }
-    });
+        if (results.some((result) => !result.valid)) {
+          process.exit(1);
+        }
+      },
+    );
 }
 
 async function collectValidationResults(
   targetPath: string,
-  strict: boolean
+  strict: boolean,
 ): Promise<ValidationResult[]> {
   if (await pathIsDirectory(targetPath)) {
     return validateDirectory(targetPath, strict);
@@ -55,7 +56,7 @@ async function collectValidationResults(
 
 function formatValidationResults(
   results: ValidationResult[],
-  format: Exclude<OutputFormat, 'html'>
+  format: Exclude<OutputFormat, 'html'>,
 ): string {
   switch (format) {
     case 'json':

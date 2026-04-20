@@ -18,7 +18,10 @@ export function examplesCommand(program: Command): void {
   program
     .command('examples')
     .description('List, show, or copy example AGENTS.md and SKILL.md files')
-    .argument('[type]', 'Filter by agent type (mcp-server, orchestrator, classifier, router, evaluator)')
+    .argument(
+      '[type]',
+      'Filter by agent type (mcp-server, orchestrator, classifier, router, evaluator)',
+    )
     .option('--show <path>', 'Show a specific example file, for example mcp-server/AGENTS.md')
     .option('--copy <type>', 'Copy an example directory into the current working directory')
     .action(async (type?: string, options?: { show?: string; copy?: string }) => {
@@ -54,7 +57,9 @@ export function examplesCommand(program: Command): void {
         return;
       }
 
-      const descriptions = await Promise.all(availableTypes.map((agentType) => describeAgentType(agentType, examplesDir)));
+      const descriptions = await Promise.all(
+        availableTypes.map((agentType) => describeAgentType(agentType, examplesDir)),
+      );
       process.stdout.write(`${descriptions.join('\n\n')}\n`);
     });
 }
@@ -78,9 +83,11 @@ async function describeAgentType(type: string, examplesDir: string): Promise<str
 
   const agentsMdPath = path.join(typeDir, 'AGENTS.md');
   const content = await readFile(agentsMdPath, 'utf-8');
-  const description = content.match(/## What this is\s+([\s\S]*?)(?:\n## |\n$)/)?.[1]
-    ?.trim()
-    .split('\n')[0] ?? 'Example agent implementation';
+  const description =
+    content
+      .match(/## What this is\s+([\s\S]*?)(?:\n## |\n$)/)?.[1]
+      ?.trim()
+      .split('\n')[0] ?? 'Example agent implementation';
 
   return [
     `${type}`,

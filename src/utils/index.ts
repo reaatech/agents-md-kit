@@ -31,7 +31,7 @@ export function truncate(text: string, maxLength: number): string {
 
 export function debounce<T extends (...args: unknown[]) => unknown>(
   fn: T,
-  ms: number
+  ms: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
   return (...args: Parameters<T>) => {
@@ -42,12 +42,15 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 
 export function groupBy<T, K extends string | number>(
   array: T[],
-  keyFn: (item: T) => K
+  keyFn: (item: T) => K,
 ): Record<K, T[]> {
-  return array.reduce((acc, item) => {
-    const key = keyFn(item);
-    acc[key] ??= [];
-    acc[key]!.push(item);
-    return acc;
-  }, {} as Record<K, T[]>);
+  return array.reduce(
+    (acc, item) => {
+      const key = keyFn(item);
+      acc[key] ??= [];
+      acc[key]!.push(item);
+      return acc;
+    },
+    {} as Record<K, T[]>,
+  );
 }

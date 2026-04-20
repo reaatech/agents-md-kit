@@ -3,10 +3,7 @@
  */
 
 import type { SkillMdDocument, ValidationResult, Finding, MarkdownTable } from '../types/domain.js';
-import {
-  createError,
-  createWarning,
-} from './schema-validator.js';
+import { createError, createWarning } from './schema-validator.js';
 import { SkillMdFrontmatterSchema } from '../types/schemas.js';
 import { hasSection, findSection } from '../parser/section-extractor.js';
 
@@ -36,7 +33,7 @@ export interface SkillMdValidationOptions {
  */
 export function validateSkillMd(
   document: SkillMdDocument,
-  options: SkillMdValidationOptions = {}
+  options: SkillMdValidationOptions = {},
 ): ValidationResult {
   const { basePath: _basePath } = options;
 
@@ -50,16 +47,26 @@ export function validateSkillMd(
       createError(
         'missing-frontmatter',
         'SKILL.md must have YAML frontmatter with skill_id, display_name, version, and description',
-        { line: 1 }
-      )
+        { line: 1 },
+      ),
     );
   } else {
     const rawFrontmatter: Record<string, unknown> = {};
-    if (document.frontmatter.id !== '') { rawFrontmatter.skill_id = document.frontmatter.id; }
-    if (document.frontmatter.display_name !== '') { rawFrontmatter.display_name = document.frontmatter.display_name; }
-    if (document.frontmatter.version !== '') { rawFrontmatter.version = document.frontmatter.version; }
-    if (document.frontmatter.description !== '') { rawFrontmatter.description = document.frontmatter.description; }
-    if (document.frontmatter.category !== undefined) { rawFrontmatter.category = document.frontmatter.category; }
+    if (document.frontmatter.id !== '') {
+      rawFrontmatter.skill_id = document.frontmatter.id;
+    }
+    if (document.frontmatter.display_name !== '') {
+      rawFrontmatter.display_name = document.frontmatter.display_name;
+    }
+    if (document.frontmatter.version !== '') {
+      rawFrontmatter.version = document.frontmatter.version;
+    }
+    if (document.frontmatter.description !== '') {
+      rawFrontmatter.description = document.frontmatter.description;
+    }
+    if (document.frontmatter.category !== undefined) {
+      rawFrontmatter.category = document.frontmatter.category;
+    }
     const zodResult = SkillMdFrontmatterSchema.safeParse(rawFrontmatter);
     if (!zodResult.success) {
       for (const issue of zodResult.error.issues) {
@@ -67,10 +74,8 @@ export function validateSkillMd(
           createError(
             'invalid-frontmatter',
             issue.message,
-            document.frontmatterRange
-              ? { line: document.frontmatterRange.start }
-              : undefined
-          )
+            document.frontmatterRange ? { line: document.frontmatterRange.start } : undefined,
+          ),
         );
       }
     }
@@ -79,11 +84,7 @@ export function validateSkillMd(
   // 2. Validate title (h1)
   if (!document.title || document.title === 'Untitled') {
     errors.push(
-      createError(
-        'missing-title',
-        'SKILL.md must have a title (h1 heading)',
-        { line: 1 }
-      )
+      createError('missing-title', 'SKILL.md must have a title (h1 heading)', { line: 1 }),
     );
   }
 
@@ -95,8 +96,8 @@ export function validateSkillMd(
           'heading-missing',
           `Required section '${section}' not found`,
           undefined,
-          `Add a '## ${section}' section to the document`
-        )
+          `Add a '## ${section}' section to the document`,
+        ),
       );
     }
   }
@@ -107,7 +108,7 @@ export function validateSkillMd(
     const tables = document.tables.filter(
       (t) =>
         t.location.line >= mcpToolsSection.location.line &&
-        t.location.line <= (mcpToolsSection.location.endLine ?? Number.MAX_SAFE_INTEGER)
+        t.location.line <= (mcpToolsSection.location.endLine ?? Number.MAX_SAFE_INTEGER),
     );
 
     if (tables.length === 0) {
@@ -116,8 +117,8 @@ export function validateSkillMd(
           'missing-tools-table',
           'MCP Tools section must contain a table with Tool, Input Schema, and Output columns',
           mcpToolsSection.location,
-          'Add a markdown table documenting the MCP tools'
-        )
+          'Add a markdown table documenting the MCP tools',
+        ),
       );
     } else {
       for (const table of tables) {
@@ -146,9 +147,7 @@ export function validateSkillMd(
 
     // Check for error example
     const hasErrorExample =
-      content.includes('error') ||
-      content.includes('failure') ||
-      content.includes('fail');
+      content.includes('error') || content.includes('failure') || content.includes('fail');
 
     if (!hasSuccessExample) {
       warnings.push(
@@ -156,8 +155,8 @@ export function validateSkillMd(
           'missing-success-example',
           'Usage Examples should include at least one success case',
           usageExamplesSection.location,
-          'Add an example showing a successful tool execution'
-        )
+          'Add an example showing a successful tool execution',
+        ),
       );
     }
 
@@ -167,8 +166,8 @@ export function validateSkillMd(
           'missing-error-example',
           'Usage Examples should include at least one error case',
           usageExamplesSection.location,
-          'Add an example showing error handling'
-        )
+          'Add an example showing error handling',
+        ),
       );
     }
   }
@@ -184,8 +183,8 @@ export function validateSkillMd(
           'missing-pii-mention',
           'Security section should mention PII handling',
           securitySection.location,
-          'Add information about how PII is handled'
-        )
+          'Add information about how PII is handled',
+        ),
       );
     }
 
@@ -195,8 +194,8 @@ export function validateSkillMd(
           'missing-permissions-mention',
           'Security section should mention permission requirements',
           securitySection.location,
-          'Add information about required permissions'
-        )
+          'Add information about required permissions',
+        ),
       );
     }
   }
@@ -209,8 +208,8 @@ export function validateSkillMd(
           'empty-section',
           `Section '${section.title}' has no content`,
           section.location,
-          'Add content to this section or remove it'
-        )
+          'Add content to this section or remove it',
+        ),
       );
     }
   }
@@ -226,8 +225,8 @@ export function validateSkillMd(
           'placeholder-text',
           `Found placeholder text matching pattern: ${pattern.source}`,
           undefined,
-          'Replace placeholder text with actual content before production'
-        )
+          'Replace placeholder text with actual content before production',
+        ),
       );
     }
   }
@@ -259,8 +258,8 @@ function validateMcpToolsTable(table: MarkdownTable): Finding[] {
           'missing-tools-column',
           `MCP Tools table missing required column: '${col}'`,
           table.location,
-          `Add a '${col}' column to the tools table`
-        )
+          `Add a '${col}' column to the tools table`,
+        ),
       );
     }
   }
@@ -276,8 +275,8 @@ function validateMcpToolsTable(table: MarkdownTable): Finding[] {
           'empty-tool-name',
           `Row ${i + 1} has empty tool name`,
           table.location,
-          'Add a tool name'
-        )
+          'Add a tool name',
+        ),
       );
     } else if (!/^[a-z][a-z0-9_-]*$/.test(toolName.toLowerCase())) {
       findings.push(
@@ -285,8 +284,8 @@ function validateMcpToolsTable(table: MarkdownTable): Finding[] {
           'invalid-tool-name',
           `Tool name '${toolName}' should be lowercase with optional hyphens/underscores`,
           table.location,
-          `Use a name like '${toolName.toLowerCase().replace(/[^a-z0-9_-]/g, '-')}'`
-        )
+          `Use a name like '${toolName.toLowerCase().replace(/[^a-z0-9_-]/g, '-')}'`,
+        ),
       );
     }
   }

@@ -30,7 +30,7 @@ describe('Integration Tests', () => {
     it('should lint a valid AGENTS.md file', async () => {
       const content = readFileSync(
         join(process.cwd(), 'examples', 'gallery', 'mcp-server', 'AGENTS.md'),
-        'utf-8'
+        'utf-8',
       );
       const document = await parseMarkdown(content, 'AGENTS.md');
       const result = runLintRules(document);
@@ -43,7 +43,7 @@ describe('Integration Tests', () => {
     it('should lint a valid SKILL.md file', async () => {
       const content = readFileSync(
         join(process.cwd(), 'examples', 'gallery', 'mcp-server', 'skills', 'echo', 'skill.md'),
-        'utf-8'
+        'utf-8',
       );
       const document = await parseMarkdown(content, 'skill.md');
       const result = runLintRules(document);
@@ -57,7 +57,7 @@ describe('Integration Tests', () => {
     it('should validate a valid AGENTS.md file', async () => {
       const content = readFileSync(
         join(process.cwd(), 'examples', 'gallery', 'mcp-server', 'AGENTS.md'),
-        'utf-8'
+        'utf-8',
       );
       const document = await parseMarkdown(content, 'AGENTS.md');
       const result = validate(document, { strict: false });
@@ -70,7 +70,7 @@ describe('Integration Tests', () => {
     it('should validate a valid SKILL.md file', async () => {
       const content = readFileSync(
         join(process.cwd(), 'examples', 'gallery', 'mcp-server', 'skills', 'echo', 'skill.md'),
-        'utf-8'
+        'utf-8',
       );
       const document = await parseMarkdown(content, 'skill.md');
       const result = validate(document, { strict: false });

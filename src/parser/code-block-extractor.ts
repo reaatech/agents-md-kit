@@ -84,14 +84,9 @@ export function hasLanguage(codeBlock: CodeBlock): boolean {
 /**
  * Get all code blocks of a specific language
  */
-export function getCodeBlocksByLanguage(
-  codeBlocks: CodeBlock[],
-  language: string
-): CodeBlock[] {
+export function getCodeBlocksByLanguage(codeBlocks: CodeBlock[], language: string): CodeBlock[] {
   const lowerLang = language.toLowerCase();
-  return codeBlocks.filter(
-    (block) => block.language?.toLowerCase() === lowerLang
-  );
+  return codeBlocks.filter((block) => block.language?.toLowerCase() === lowerLang);
 }
 
 /**
@@ -131,7 +126,7 @@ export function formatCodeBlock(codeBlock: CodeBlock): string {
  * Validate that code blocks have language identifiers
  */
 export function validateCodeBlockLanguages(
-  codeBlocks: CodeBlock[]
+  codeBlocks: CodeBlock[],
 ): Array<{ codeBlock: CodeBlock; hasLanguage: boolean }> {
   return codeBlocks.map((block) => ({
     codeBlock: block,

@@ -2,7 +2,14 @@
  * Linting rules engine for AGENTS.md and SKILL.md files
  */
 
-import type { AgentsMdDocument, SkillMdDocument, LintResult, RuleDefinition, Severity, Finding } from '../types/domain.js';
+import type {
+  AgentsMdDocument,
+  SkillMdDocument,
+  LintResult,
+  RuleDefinition,
+  Severity,
+  Finding,
+} from '../types/domain.js';
 
 export type LintRule = (document: AgentsMdDocument | SkillMdDocument) => Array<{
   ruleId: string;
@@ -26,9 +33,10 @@ export function registerRule(
   category: 'style' | 'content' | 'best-practice',
   ruleId: string,
   rule: LintRule,
-  definition: Omit<RuleDefinition, 'category'>
+  definition: Omit<RuleDefinition, 'category'>,
 ): void {
-  const registry = category === 'style' ? styleRules : category === 'content' ? contentRules : bestPracticeRules;
+  const registry =
+    category === 'style' ? styleRules : category === 'content' ? contentRules : bestPracticeRules;
   registry.set(ruleId, { rule, definition: { ...definition, category } });
 }
 
@@ -38,35 +46,39 @@ export function registerRule(
 export function runLintRules(document: AgentsMdDocument | SkillMdDocument): LintResult {
   const findings: Finding[] = [];
 
-  const allRules = [...styleRules.values(), ...contentRules.values(), ...bestPracticeRules.values()];
+  const allRules = [
+    ...styleRules.values(),
+    ...contentRules.values(),
+    ...bestPracticeRules.values(),
+  ];
 
-    for (const { rule, definition } of allRules) {
-      try {
-        const ruleFindings = rule(document);
-        for (const finding of ruleFindings) {
-          const entry: Finding = {
-            rule: finding.ruleId,
-            severity: finding.severity,
-            message: finding.message,
-            autoFixable: definition.autoFixable,
-          };
-          if (finding.suggestion !== undefined) {
-            entry.suggestion = finding.suggestion;
-          }
-          if (finding.line !== undefined) {
-            entry.location = { line: finding.line };
-          }
-          findings.push(entry);
+  for (const { rule, definition } of allRules) {
+    try {
+      const ruleFindings = rule(document);
+      for (const finding of ruleFindings) {
+        const entry: Finding = {
+          rule: finding.ruleId,
+          severity: finding.severity,
+          message: finding.message,
+          autoFixable: definition.autoFixable,
+        };
+        if (finding.suggestion !== undefined) {
+          entry.suggestion = finding.suggestion;
         }
-      } catch {
-        findings.push({
-          rule: definition.id,
-          severity: 'error',
-          message: `Rule '${definition.id}' failed to execute`,
-          autoFixable: false,
-        });
+        if (finding.line !== undefined) {
+          entry.location = { line: finding.line };
+        }
+        findings.push(entry);
       }
+    } catch {
+      findings.push({
+        rule: definition.id,
+        severity: 'error',
+        message: `Rule '${definition.id}' failed to execute`,
+        autoFixable: false,
+      });
     }
+  }
 
   const errorCount = findings.filter((f) => f.severity === 'error').length;
   const warningCount = findings.filter((f) => f.severity === 'warning').length;
@@ -87,6 +99,10 @@ export function runLintRules(document: AgentsMdDocument | SkillMdDocument): Lint
  * Get all registered rules
  */
 export function getRegisteredRules(): RuleDefinition[] {
-  const allRules = [...styleRules.values(), ...contentRules.values(), ...bestPracticeRules.values()];
+  const allRules = [
+    ...styleRules.values(),
+    ...contentRules.values(),
+    ...bestPracticeRules.values(),
+  ];
   return allRules.map(({ definition }) => definition);
 }

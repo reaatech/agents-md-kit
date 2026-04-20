@@ -96,7 +96,9 @@ function fixTableFormat(content: string): string {
         let j = i + 1;
         while (j < lines.length) {
           const tl = lines[j]?.trim() ?? '';
-          if (!tl.startsWith('|') || !tl.endsWith('|')) { break; }
+          if (!tl.startsWith('|') || !tl.endsWith('|')) {
+            break;
+          }
           tableLines.push(lines[j] ?? '');
           j++;
         }
@@ -104,8 +106,12 @@ function fixTableFormat(content: string): string {
         // Parse cells for each row
         const parsed = tableLines.map((tl) => {
           let trimmed = tl.trim();
-          if (trimmed.startsWith('|')) { trimmed = trimmed.slice(1); }
-          if (trimmed.endsWith('|')) { trimmed = trimmed.slice(0, -1); }
+          if (trimmed.startsWith('|')) {
+            trimmed = trimmed.slice(1);
+          }
+          if (trimmed.endsWith('|')) {
+            trimmed = trimmed.slice(0, -1);
+          }
           return trimmed.split('|').map((cell) => cell.trim());
         });
 
@@ -116,7 +122,9 @@ function fixTableFormat(content: string): string {
           for (let c = 0; c < row.length; c++) {
             const cell = row[c] ?? '';
             // Skip separator cells for width calculation
-            if (/^:?-+:?$/.test(cell)) { continue; }
+            if (/^:?-+:?$/.test(cell)) {
+              continue;
+            }
             colWidths[c] = Math.max(colWidths[c] ?? 3, cell.length);
           }
         }
@@ -155,7 +163,15 @@ function fixTableFormat(content: string): string {
 function fixAddMissingSections(content: string, isSkill: boolean): string {
   const requiredSections = isSkill
     ? ['Capability', 'MCP Tools', 'Usage Examples', 'Error Handling', 'Security Considerations']
-    : ['What this is', 'Architecture Overview', 'Skill System', 'MCP Integration', 'Security Considerations', 'Observability', 'Checklist: Production Readiness'];
+    : [
+        'What this is',
+        'Architecture Overview',
+        'Skill System',
+        'MCP Integration',
+        'Security Considerations',
+        'Observability',
+        'Checklist: Production Readiness',
+      ];
 
   const existingHeadings = new Set<string>();
   for (const line of content.split('\n')) {
@@ -166,7 +182,7 @@ function fixAddMissingSections(content: string, isSkill: boolean): string {
   }
 
   const missingSections = requiredSections.filter(
-    (section) => !existingHeadings.has(section.toLowerCase())
+    (section) => !existingHeadings.has(section.toLowerCase()),
   );
 
   if (missingSections.length === 0) {
@@ -185,10 +201,7 @@ function fixAddMissingSections(content: string, isSkill: boolean): string {
 /**
  * Run auto-fix on content based on rule IDs
  */
-export function runAutoFix(
-  content: string,
-  ruleIds: string[]
-): string {
+export function runAutoFix(content: string, ruleIds: string[]): string {
   let result = content;
 
   for (const ruleId of ruleIds) {

@@ -1,9 +1,9 @@
 ---
-agent_id: "test-agent"
-display_name: "Test Agent"
-version: "1.0.0"
-description: "A test agent used for validating the agents-md-kit parser and validator"
-type: "mcp"
+agent_id: 'test-agent'
+display_name: 'Test Agent'
+version: '1.0.0'
+description: 'A test agent used for validating the agents-md-kit parser and validator'
+type: 'mcp'
 confidence_threshold: 0.9
 ---
 
@@ -24,26 +24,26 @@ This is a test agent used for unit and integration testing of agents-md-kit. It 
 
 ### Components
 
-| Component | Description |
-|-----------|-------------|
+| Component  | Description               |
+| ---------- | ------------------------- |
 | **Server** | MCP server implementation |
 | **Router** | Routes requests to skills |
 
 ## Skill System
 
-| Skill ID | File | Description |
-|----------|------|-------------|
-| `echo` | `skills/echo/skill.md` | Echo back the input message |
-| `transform` | `skills/transform/skill.md` | Transform input data |
+| Skill ID    | File                        | Description                 |
+| ----------- | --------------------------- | --------------------------- |
+| `echo`      | `skills/echo/skill.md`      | Echo back the input message |
+| `transform` | `skills/transform/skill.md` | Transform input data        |
 
 ## MCP Integration
 
 ### Tools
 
-| Tool | Input Schema | Output | Rate Limit |
-|------|-------------|--------|------------|
-| `echo` | `z.object({ message: z.string() })` | `{ echo: string }` | 60 RPM |
-| `transform` | `z.object({ data: z.string(), format: z.string() })` | `{ result: string }` | 30 RPM |
+| Tool        | Input Schema                                         | Output               | Rate Limit |
+| ----------- | ---------------------------------------------------- | -------------------- | ---------- |
+| `echo`      | `z.object({ message: z.string() })`                  | `{ echo: string }`   | 60 RPM     |
+| `transform` | `z.object({ data: z.string(), format: z.string() })` | `{ result: string }` | 30 RPM     |
 
 ### Example Request
 
@@ -88,10 +88,10 @@ All operations emit structured JSON logs via pino:
 
 ### Metrics
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `test_agent.requests.total` | Counter | Total requests |
-| `test_agent.requests.duration_ms` | Histogram | Latency |
+| Metric                            | Type      | Description    |
+| --------------------------------- | --------- | -------------- |
+| `test_agent.requests.total`       | Counter   | Total requests |
+| `test_agent.requests.duration_ms` | Histogram | Latency        |
 
 ## Checklist: Production Readiness
 

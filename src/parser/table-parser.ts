@@ -93,9 +93,7 @@ function parseTableRow(line: string): string[] {
   }
 
   // Split by pipe and trim each cell
-  return trimmed
-    .split('|')
-    .map((cell) => cell.trim());
+  return trimmed.split('|').map((cell) => cell.trim());
 }
 
 /**
@@ -120,17 +118,13 @@ function isTableSeparator(line: string): boolean {
  * Extract a specific column from a table
  */
 export function extractColumn(table: MarkdownTable, columnName: string): string[] {
-  const columnIndex = table.headers.findIndex(
-    (h) => h.toLowerCase() === columnName.toLowerCase()
-  );
+  const columnIndex = table.headers.findIndex((h) => h.toLowerCase() === columnName.toLowerCase());
 
   if (columnIndex === -1) {
     return [];
   }
 
-  return table.rows
-    .map((row) => row[columnIndex] ?? '')
-    .filter((value) => value.length > 0);
+  return table.rows.map((row) => row[columnIndex] ?? '').filter((value) => value.length > 0);
 }
 
 /**
@@ -167,9 +161,7 @@ export function validateTableStructure(table: MarkdownTable): Array<{
 
   // Check for duplicate headers
   const lowerHeaders = table.headers.map((h) => h.toLowerCase());
-  const duplicates = lowerHeaders.filter(
-    (h, i) => h.length > 0 && lowerHeaders.indexOf(h) !== i
-  );
+  const duplicates = lowerHeaders.filter((h, i) => h.length > 0 && lowerHeaders.indexOf(h) !== i);
   if (duplicates.length > 0) {
     issues.push({
       valid: false,

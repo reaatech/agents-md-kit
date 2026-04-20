@@ -20,9 +20,13 @@ export function formatCommand(program: Command): void {
     .option('--dry-run', 'Show what would change without writing files', false)
     .option('--rules <rules>', 'Comma-separated list of rules to apply (default: all fixable)')
     .action(async (targetPath: string, options: { dryRun: boolean; rules?: string }) => {
-      const ruleIds = options.rules !== undefined
-        ? options.rules.split(',').map((rule) => rule.trim()).filter(Boolean)
-        : getFixableRules();
+      const ruleIds =
+        options.rules !== undefined
+          ? options.rules
+              .split(',')
+              .map((rule) => rule.trim())
+              .filter(Boolean)
+          : getFixableRules();
 
       const files = await resolveTargetFiles(targetPath);
       let appliedCount = 0;

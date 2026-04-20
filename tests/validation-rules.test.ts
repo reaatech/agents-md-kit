@@ -23,7 +23,9 @@ Test.
 
     expect(result.valid).toBe(false);
     expect(result.errors.some((finding) => finding.rule === 'heading-missing')).toBe(true);
-    expect(result.warnings.some((finding) => finding.rule === 'missing-recommended-section')).toBe(true);
+    expect(result.warnings.some((finding) => finding.rule === 'missing-recommended-section')).toBe(
+      true,
+    );
   });
 
   it('reports skill table and examples issues', async () => {

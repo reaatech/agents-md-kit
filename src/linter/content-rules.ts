@@ -53,7 +53,8 @@ const placeholderTextRule: LintRule = (document) => {
         findings.push({
           ruleId: 'placeholder-text',
           severity: 'warning',
-          message: 'Found placeholder text matching pattern: ' + pattern.source.replace(/[\\b]/g, ''),
+          message:
+            'Found placeholder text matching pattern: ' + pattern.source.replace(/[\\b]/g, ''),
           line: i + 1,
           suggestion: 'Replace placeholder text with actual content before production',
         });
@@ -134,9 +135,7 @@ const SKILL_REQUIRED_SECTIONS = [
  */
 const headingMissingRule: LintRule = (document) => {
   const findings: ReturnType<LintRule> = [];
-  const isSkill =
-    document.path.includes('skill.md') ||
-    document.path.includes('skills/');
+  const isSkill = document.path.includes('skill.md') || document.path.includes('skills/');
 
   const requiredSections = isSkill ? SKILL_REQUIRED_SECTIONS : AGENTS_REQUIRED_SECTIONS;
 
@@ -179,16 +178,19 @@ const brokenSkillRefRule: LintRule = (document) => {
   const findings: ReturnType<LintRule> = [];
 
   // Only applicable to AGENTS.md documents
-  const isSkill =
-    document.path.includes('skill.md') ||
-    document.path.includes('skills/');
-  if (isSkill) { return findings; }
+  const isSkill = document.path.includes('skill.md') || document.path.includes('skills/');
+  if (isSkill) {
+    return findings;
+  }
 
   // Find skills table or skill references in content
   const skillSection = document.sections.find(
-    (s) => s.title.toLowerCase().includes('skill system') || s.title.toLowerCase().includes('skills')
+    (s) =>
+      s.title.toLowerCase().includes('skill system') || s.title.toLowerCase().includes('skills'),
   );
-  if (!skillSection) { return findings; }
+  if (!skillSection) {
+    return findings;
+  }
 
   // Extract skill file references from content
   const pattern = /skills\/[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_.-]+)?/g;
@@ -214,13 +216,20 @@ const brokenSkillRefRule: LintRule = (document) => {
   // But we can check the tables for references that look malformed
   for (const table of document.tables ?? []) {
     const fileColIdx = table.headers.findIndex(
-      (h) => h.toLowerCase() === 'file' || h.toLowerCase() === 'path'
+      (h) => h.toLowerCase() === 'file' || h.toLowerCase() === 'path',
     );
-    if (fileColIdx === -1) { continue; }
+    if (fileColIdx === -1) {
+      continue;
+    }
 
     for (const row of table.rows) {
       const ref = row[fileColIdx];
-      if (ref !== undefined && ref.length > 0 && ref.includes('skills/') && !ref.match(/skills\/[a-zA-Z0-9_-]+/)) {
+      if (
+        ref !== undefined &&
+        ref.length > 0 &&
+        ref.includes('skills/') &&
+        !ref.match(/skills\/[a-zA-Z0-9_-]+/)
+      ) {
         findings.push({
           ruleId: 'broken-skill-ref',
           severity: 'error',
@@ -250,26 +259,28 @@ const duplicateSkillIdRule: LintRule = (document) => {
   const findings: ReturnType<LintRule> = [];
 
   // Only applicable to AGENTS.md documents
-  const isSkill =
-    document.path.includes('skill.md') ||
-    document.path.includes('skills/');
-  if (isSkill) { return findings; }
+  const isSkill = document.path.includes('skill.md') || document.path.includes('skills/');
+  if (isSkill) {
+    return findings;
+  }
 
   // Find tables that look like skill tables
   for (const table of document.tables ?? []) {
     const skillIdColIdx = table.headers.findIndex(
       (h) =>
-        h.toLowerCase() === 'skill id' ||
-        h.toLowerCase() === 'skill' ||
-        h.toLowerCase() === 'id'
+        h.toLowerCase() === 'skill id' || h.toLowerCase() === 'skill' || h.toLowerCase() === 'id',
     );
-    if (skillIdColIdx === -1) { continue; }
+    if (skillIdColIdx === -1) {
+      continue;
+    }
 
     const seen = new Map<string, number>();
     for (let i = 0; i < table.rows.length; i++) {
       const row = table.rows[i];
       const skillId = (row?.[skillIdColIdx] ?? '').trim().replace(/`/g, '');
-      if (!skillId) { continue; }
+      if (!skillId) {
+        continue;
+      }
 
       const existing = seen.get(skillId);
       if (existing !== undefined) {
@@ -316,10 +327,10 @@ const AGENTS_SECTION_ORDER = [
 const sectionOrderingRule: LintRule = (document) => {
   const findings: ReturnType<LintRule> = [];
 
-  const isSkill =
-    document.path.includes('skill.md') ||
-    document.path.includes('skills/');
-  if (isSkill) { return findings; }
+  const isSkill = document.path.includes('skill.md') || document.path.includes('skills/');
+  if (isSkill) {
+    return findings;
+  }
 
   const sectionTitles = document.sections
     .filter((s) => s.level === 2)
@@ -328,19 +339,20 @@ const sectionOrderingRule: LintRule = (document) => {
   let lastOrderIndex = -1;
   for (const title of sectionTitles) {
     const orderIndex = AGENTS_SECTION_ORDER.indexOf(title);
-    if (orderIndex === -1) { continue; } // Not a tracked section
+    if (orderIndex === -1) {
+      continue;
+    } // Not a tracked section
 
     if (orderIndex < lastOrderIndex) {
-      const section = document.sections.find(
-        (s) => s.title.toLowerCase() === title
-      );
+      const section = document.sections.find((s) => s.title.toLowerCase() === title);
       const line = section?.location?.line;
       findings.push({
         ruleId: 'section-ordering',
         severity: 'warning',
         message: `Section '${section?.title ?? title}' is out of recommended order`,
         ...(line !== undefined ? { line } : {}),
-        suggestion: 'Recommended order: What this is, Architecture Overview, Skill System, MCP Integration, Security Considerations, Observability, Checklist',
+        suggestion:
+          'Recommended order: What this is, Architecture Overview, Skill System, MCP Integration, Security Considerations, Observability, Checklist',
       });
     } else {
       lastOrderIndex = orderIndex;
@@ -366,7 +378,9 @@ const minContentLengthRule: LintRule = (document) => {
   const minLength = 20; // Minimum characters of content
 
   for (const section of document.sections) {
-    if (section.level > 2) { continue; } // Only check top-level sections
+    if (section.level > 2) {
+      continue;
+    } // Only check top-level sections
 
     const content = section.content?.trim() ?? '';
     if (content.length > 0 && content.length < minLength && section.subsections.length === 0) {

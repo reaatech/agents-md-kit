@@ -64,11 +64,11 @@ export function generateHtmlReport(results: LintResult[], options: HtmlReportOpt
       <strong>${finding.severity.toUpperCase()}</strong> <code>${escapeHtml(finding.rule)}</code>${
         finding.location ? ` line ${finding.location.line}` : ''
       }: ${escapeHtml(finding.message)}${finding.suggestion !== undefined ? `<div>${escapeHtml(finding.suggestion)}</div>` : ''}
-    </div>`
+    </div>`,
             )
             .join('')
     }
-  </section>`
+  </section>`,
     )
     .join('')}
 </body>
@@ -82,7 +82,7 @@ export function reportLintResult(results: LintResult | LintResult[]): string {
 export function writeHtmlReport(
   results: LintResult[],
   outputPath: string,
-  options: HtmlReportOptions = {}
+  options: HtmlReportOptions = {},
 ): Promise<void> {
   return writeFileAsync(outputPath, generateHtmlReport(results, options), 'utf-8');
 }

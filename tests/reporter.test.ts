@@ -8,10 +8,7 @@ import {
   reportScaffoldResult,
   reportValidationResult as reportConsoleValidation,
 } from '../src/reporter/console-reporter.js';
-import {
-  generateHtmlReport,
-  writeHtmlReport,
-} from '../src/reporter/html-reporter.js';
+import { generateHtmlReport, writeHtmlReport } from '../src/reporter/html-reporter.js';
 import {
   lintToJson,
   reportLintResult as reportJsonLint,
@@ -84,7 +81,9 @@ describe('reporters', () => {
     expect(reportJsonValidation(validationResult)).toContain('"valid": false');
     expect(reportValidationAsMarkdown(validationResult)).toContain('Validation Report');
     expect(reportMarkdownValidation(validationResult)).toContain('heading-missing');
-    expect(reportScaffoldResult(['a'], ['b'], [{ path: 'c', error: 'boom' }])).toContain('Scaffold Results');
+    expect(reportScaffoldResult(['a'], ['b'], [{ path: 'c', error: 'boom' }])).toContain(
+      'Scaffold Results',
+    );
   });
 
   it('writes an html report to disk', async () => {
@@ -103,7 +102,7 @@ describe('reporters', () => {
           fixableCount: 0,
         },
       ],
-      outputPath
+      outputPath,
     );
 
     expect(readFileSync(outputPath, 'utf-8')).toContain('agents-md-kit Report');

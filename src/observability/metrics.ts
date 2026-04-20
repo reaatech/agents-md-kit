@@ -4,7 +4,10 @@
 
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { Resource } from '@opentelemetry/resources';
-import { SEMRESATTRS_SERVICE_NAME, SEMRESATTRS_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
+import {
+  SEMRESATTRS_SERVICE_NAME,
+  SEMRESATTRS_SERVICE_VERSION,
+} from '@opentelemetry/semantic-conventions';
 import type { Meter, Counter, Histogram, Attributes } from '@opentelemetry/api';
 import { metrics } from '@opentelemetry/api';
 
@@ -25,13 +28,7 @@ export const METRIC_NAMES = {
 /**
  * Operation types for metrics
  */
-export type OperationType = 
-  | 'parse' 
-  | 'validate' 
-  | 'lint' 
-  | 'scaffold' 
-  | 'format'
-  | 'report';
+export type OperationType = 'parse' | 'validate' | 'lint' | 'scaffold' | 'format' | 'report';
 
 /**
  * Metric recording interface
@@ -68,7 +65,7 @@ export class MetricsManager implements MetricRecorder {
     });
 
     this.provider = new MeterProvider({ resource });
-    
+
     metrics.setGlobalMeterProvider(this.provider);
 
     this.meter = this.provider.getMeter(serviceName);
@@ -192,7 +189,7 @@ export function getMetricsManager(): MetricsManager {
  */
 export async function recordOperation<T>(
   operation: OperationType,
-  fn: () => Promise<T>
+  fn: () => Promise<T>,
 ): Promise<T> {
   const startTime = Date.now();
   try {

@@ -3,10 +3,7 @@
  */
 
 import type { AgentsMdDocument, ValidationResult, Finding } from '../types/domain.js';
-import {
-  createError,
-  createWarning,
-} from './schema-validator.js';
+import { createError, createWarning } from './schema-validator.js';
 import { AgentsMdFrontmatterSchema } from '../types/schemas.js';
 import { hasSection, findSection } from '../parser/section-extractor.js';
 
@@ -49,7 +46,7 @@ export interface AgentsMdValidationOptions {
  */
 export function validateAgentsMd(
   document: AgentsMdDocument,
-  options: AgentsMdValidationOptions = {}
+  options: AgentsMdValidationOptions = {},
 ): ValidationResult {
   const { basePath = '', existingSkills = [] } = options;
 
@@ -63,16 +60,26 @@ export function validateAgentsMd(
       createError(
         'missing-frontmatter',
         'AGENTS.md must have YAML frontmatter with agent_id, display_name, version, and description',
-        { line: 1 }
-      )
+        { line: 1 },
+      ),
     );
   } else {
     const rawFrontmatter: Record<string, unknown> = {};
-    if (document.frontmatter.id !== '') { rawFrontmatter.agent_id = document.frontmatter.id; }
-    if (document.frontmatter.display_name !== '') { rawFrontmatter.display_name = document.frontmatter.display_name; }
-    if (document.frontmatter.version !== '') { rawFrontmatter.version = document.frontmatter.version; }
-    if (document.frontmatter.description !== '') { rawFrontmatter.description = document.frontmatter.description; }
-    if (document.frontmatter.type !== undefined) { rawFrontmatter.type = document.frontmatter.type; }
+    if (document.frontmatter.id !== '') {
+      rawFrontmatter.agent_id = document.frontmatter.id;
+    }
+    if (document.frontmatter.display_name !== '') {
+      rawFrontmatter.display_name = document.frontmatter.display_name;
+    }
+    if (document.frontmatter.version !== '') {
+      rawFrontmatter.version = document.frontmatter.version;
+    }
+    if (document.frontmatter.description !== '') {
+      rawFrontmatter.description = document.frontmatter.description;
+    }
+    if (document.frontmatter.type !== undefined) {
+      rawFrontmatter.type = document.frontmatter.type;
+    }
     const zodResult = AgentsMdFrontmatterSchema.safeParse(rawFrontmatter);
     if (!zodResult.success) {
       for (const issue of zodResult.error.issues) {
@@ -80,10 +87,8 @@ export function validateAgentsMd(
           createError(
             'invalid-frontmatter',
             issue.message,
-            document.frontmatterRange
-              ? { line: document.frontmatterRange.start }
-              : undefined
-          )
+            document.frontmatterRange ? { line: document.frontmatterRange.start } : undefined,
+          ),
         );
       }
     }
@@ -97,11 +102,9 @@ export function validateAgentsMd(
         createError(
           'missing-confidence',
           'Agent config must include confidence_threshold',
-          document.frontmatterRange
-            ? { line: document.frontmatterRange.start }
-            : undefined,
-          'Add confidence_threshold to frontmatter (e.g., confidence_threshold: 0.9)'
-        )
+          document.frontmatterRange ? { line: document.frontmatterRange.start } : undefined,
+          'Add confidence_threshold to frontmatter (e.g., confidence_threshold: 0.9)',
+        ),
       );
     }
   }
@@ -109,11 +112,7 @@ export function validateAgentsMd(
   // 2. Validate title (h1)
   if (!document.title || document.title === 'Untitled') {
     errors.push(
-      createError(
-        'missing-title',
-        'AGENTS.md must have a title (h1 heading)',
-        { line: 1 }
-      )
+      createError('missing-title', 'AGENTS.md must have a title (h1 heading)', { line: 1 }),
     );
   }
 
@@ -125,8 +124,8 @@ export function validateAgentsMd(
           'heading-missing',
           `Required section '${section}' not found`,
           undefined,
-          `Add a '## ${section}' section to the document`
-        )
+          `Add a '## ${section}' section to the document`,
+        ),
       );
     }
   }
@@ -139,8 +138,8 @@ export function validateAgentsMd(
           'missing-recommended-section',
           `Recommended section '${section}' not found`,
           undefined,
-          `Consider adding a '## ${section}' section`
-        )
+          `Consider adding a '## ${section}' section`,
+        ),
       );
     }
   }
@@ -157,8 +156,8 @@ export function validateAgentsMd(
         createWarning(
           'heading-order',
           `Heading level skipped: ${section.title} (level ${section.level} after level ${lastLevel})`,
-          section.location
-        )
+          section.location,
+        ),
       );
     }
     lastLevel = section.level;
@@ -176,8 +175,8 @@ export function validateAgentsMd(
             'broken-skill-reference',
             `Referenced skill '${skillRef}' not found`,
             skillSection.location,
-            `Create the skill file at ${skillPath} or remove the reference`
-          )
+            `Create the skill file at ${skillPath} or remove the reference`,
+          ),
         );
       }
     }
@@ -193,8 +192,8 @@ export function validateAgentsMd(
           'missing-pii-mention',
           'Security section should mention PII handling',
           securitySection.location,
-          'Add a paragraph about how PII is handled, stored, and protected'
-        )
+          'Add a paragraph about how PII is handled, stored, and protected',
+        ),
       );
     }
   }
@@ -209,8 +208,8 @@ export function validateAgentsMd(
           'missing-observability',
           'Observability section should mention structured logging',
           observabilitySection.location,
-          'Add information about logging approach and log format'
-        )
+          'Add information about logging approach and log format',
+        ),
       );
     }
   }
@@ -226,8 +225,8 @@ export function validateAgentsMd(
           'placeholder-text',
           `Found placeholder text matching pattern: ${pattern.source}`,
           undefined,
-          'Replace placeholder text with actual content before production'
-        )
+          'Replace placeholder text with actual content before production',
+        ),
       );
     }
   }
@@ -240,8 +239,8 @@ export function validateAgentsMd(
           'empty-section',
           `Section '${section.title}' has no content`,
           section.location,
-          'Add content to this section or remove it'
-        )
+          'Add content to this section or remove it',
+        ),
       );
     }
   }

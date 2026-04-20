@@ -21,7 +21,7 @@ const inputSchema = z.object({
         displayName: z.string(),
         skillType: z.enum(['tool', 'orchestration', 'evaluation', 'routing']),
         description: z.string().optional(),
-      })
+      }),
     )
     .optional(),
 });
@@ -51,15 +51,14 @@ export const scaffoldAgentTool = {
   async handler(args: ScaffoldAgentInput) {
     try {
       const parsed = inputSchema.parse(args);
-    const config: ScaffoldConfig = {
-      agentId: parsed.agentId,
-      displayName: parsed.displayName,
-      agentType: parsed.agentType,
-      version: parsed.version ?? '1.0.0',
-      outputDir: parsed.outputDir,
-      overwrite: parsed.overwrite ?? false,
-      skills:
-        parsed.skills?.map((skill) => ({
+      const config: ScaffoldConfig = {
+        agentId: parsed.agentId,
+        displayName: parsed.displayName,
+        agentType: parsed.agentType,
+        version: parsed.version ?? '1.0.0',
+        outputDir: parsed.outputDir,
+        overwrite: parsed.overwrite ?? false,
+        skills: parsed.skills?.map((skill) => ({
           skillId: skill.skillId,
           displayName: skill.displayName,
           skillType: skill.skillType,
@@ -72,17 +71,17 @@ export const scaffoldAgentTool = {
             description: 'Generated example skill',
           },
         ],
-      ...(parsed.description !== undefined ? { description: parsed.description } : {}),
-    };
+        ...(parsed.description !== undefined ? { description: parsed.description } : {}),
+      };
 
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: JSON.stringify(generateFiles(config), null, 2),
-        },
-      ],
-    };
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify(generateFiles(config), null, 2),
+          },
+        ],
+      };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Scaffold operation failed';
       return {

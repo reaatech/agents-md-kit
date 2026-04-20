@@ -21,9 +21,8 @@ export function formatFinding(finding: Finding): string {
   if (finding.location) {
     const loc = finding.location;
     if (loc.line !== undefined) {
-      const location = loc.column !== undefined
-        ? `line ${loc.line}:${loc.column}`
-        : `line ${loc.line}`;
+      const location =
+        loc.column !== undefined ? `line ${loc.line}:${loc.column}` : `line ${loc.line}`;
       parts.push(`(${location})`);
     }
   }
@@ -138,7 +137,7 @@ export function formatFindingsGrouped(findings: Finding[]): string {
 export function formatWithContext(
   finding: Finding,
   content: string,
-  contextLines: number = 2
+  contextLines: number = 2,
 ): string {
   const lines: string[] = [];
 
@@ -168,7 +167,7 @@ export function formatWithContext(
  */
 export function createErrorReport(
   results: ValidationResult[],
-  options: { includeContext?: boolean; content?: string } = {}
+  options: { includeContext?: boolean; content?: string } = {},
 ): string {
   const { includeContext = false, content = '' } = options;
   const lines: string[] = [];
@@ -227,9 +226,7 @@ export function createErrorReport(
  * Get auto-fixable findings from results
  */
 export function getAutoFixableFindings(results: ValidationResult[]): Finding[] {
-  return results.flatMap((r) => [
-    ...r.errors,
-    ...r.warnings,
-    ...r.suggestions,
-  ]).filter((f) => f.autoFixable && f.fix !== undefined);
+  return results
+    .flatMap((r) => [...r.errors, ...r.warnings, ...r.suggestions])
+    .filter((f) => f.autoFixable && f.fix !== undefined);
 }

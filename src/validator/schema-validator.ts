@@ -29,7 +29,7 @@ export interface ValidationOptions {
  */
 export function validate(
   document: AgentsMdDocument | SkillMdDocument,
-  options: ValidationOptions = {}
+  options: ValidationOptions = {},
 ): ValidationResult {
   const { strict = false, basePath = '', existingSkills = [] } = options;
 
@@ -72,7 +72,7 @@ export function validate(
  */
 export function validateMultiple(
   documents: Array<AgentsMdDocument | SkillMdDocument>,
-  options: ValidationOptions = {}
+  options: ValidationOptions = {},
 ): ValidationResult[] {
   return documents.map((doc) => validate(doc, options));
 }
@@ -80,9 +80,7 @@ export function validateMultiple(
 /**
  * Check if a document is a SKILL.md document
  */
-function isSkillDocument(
-  document: AgentsMdDocument | SkillMdDocument
-): boolean {
+function isSkillDocument(document: AgentsMdDocument | SkillMdDocument): boolean {
   if (document.path.endsWith('AGENTS.md') || document.path.endsWith('agents.md')) {
     return false;
   }
@@ -119,7 +117,7 @@ export function createFinding(
   location?: Finding['location'],
   suggestion?: string,
   autoFixable: boolean = false,
-  fix?: Finding['fix']
+  fix?: Finding['fix'],
 ): Finding {
   const finding: Finding = {
     rule,
@@ -148,7 +146,7 @@ export function createError(
   rule: string,
   message: string,
   location?: Finding['location'],
-  suggestion?: string
+  suggestion?: string,
 ): Finding {
   return createFinding(rule, 'error', message, location, suggestion, false);
 }
@@ -160,7 +158,7 @@ export function createWarning(
   rule: string,
   message: string,
   location?: Finding['location'],
-  suggestion?: string
+  suggestion?: string,
 ): Finding {
   return createFinding(rule, 'warning', message, location, suggestion, false);
 }
@@ -172,7 +170,7 @@ export function createInfo(
   rule: string,
   message: string,
   location?: Finding['location'],
-  suggestion?: string
+  suggestion?: string,
 ): Finding {
   return createFinding(rule, 'info', message, location, suggestion, false);
 }
@@ -184,7 +182,7 @@ export function createSuggestion(
   rule: string,
   message: string,
   location?: Finding['location'],
-  suggestion?: string
+  suggestion?: string,
 ): Finding {
   return createFinding(rule, 'suggestion', message, location, suggestion, false);
 }
@@ -198,7 +196,7 @@ export function createFixableFinding(
   message: string,
   location: Finding['location'],
   suggestion: string,
-  fix: Finding['fix']
+  fix: Finding['fix'],
 ): Finding {
   return createFinding(rule, severity, message, location, suggestion, true, fix);
 }

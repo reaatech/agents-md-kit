@@ -42,7 +42,9 @@ describe('parser utilities', () => {
     });
     expect(created).toContain('agent_id: "agent"');
 
-    const updated = updateFrontmatter(`${created}\n# Agent\n`, { description: 'Updated description' });
+    const updated = updateFrontmatter(`${created}\n# Agent\n`, {
+      description: 'Updated description',
+    });
     const extracted = extractFrontmatter(updated);
     expect(extracted.frontmatter?.description).toBe('Updated description');
     expect(extractFrontmatter('no frontmatter').frontmatter).toBeNull();
@@ -93,36 +95,38 @@ describe('parser utilities', () => {
           ],
         },
       ],
-      3
+      3,
     );
     expect(sections[0]?.title).toBe('Child');
     expect(flattenSectionTitles(sections)).toContain('Child');
-    expect(findSectionByPath(
-      [
-        {
-          title: 'Parent',
-          level: 2,
-          content: 'content',
-          location: { line: 1, endLine: 6 },
-          subsections: [
-            {
-              title: 'Child',
-              level: 3,
-              content: 'content',
-              location: { line: 3, endLine: 6 },
-              subsections: [],
-            },
-          ],
-        },
-      ],
-      ['Parent', 'Child']
-    )?.title).toBe('Child');
+    expect(
+      findSectionByPath(
+        [
+          {
+            title: 'Parent',
+            level: 2,
+            content: 'content',
+            location: { line: 1, endLine: 6 },
+            subsections: [
+              {
+                title: 'Child',
+                level: 3,
+                content: 'content',
+                location: { line: 3, endLine: 6 },
+                subsections: [],
+              },
+            ],
+          },
+        ],
+        ['Parent', 'Child'],
+      )?.title,
+    ).toBe('Child');
   });
 
   it('covers markdown parser helpers', async () => {
     const document = await parseMarkdown(
       '# Title\n\n## Capability\n\nDoes work.\n\n## MCP Tools\n\n| Tool | Input Schema | Output |\n|---|---|---|\n| run | a | b |',
-      'notes/skills/example.md'
+      'notes/skills/example.md',
     );
     expect(getSectionTitles(document)).toContain('Title');
     expect(findSection(document, 'MCP Tools')).toBeUndefined();
@@ -201,7 +205,13 @@ describe('frontmatter validation', () => {
   });
 
   it('creates frontmatter with only id', () => {
-    const result = createFrontmatter({ id: 'test', display_name: '', version: '', description: '', raw: '' });
+    const result = createFrontmatter({
+      id: 'test',
+      display_name: '',
+      version: '',
+      description: '',
+      raw: '',
+    });
     expect(result).toContain('agent_id: "test"');
     expect(result).not.toContain('display_name');
   });
@@ -220,7 +230,12 @@ describe('frontmatter validation', () => {
 
   it('returns original content when updated frontmatter is empty', () => {
     const content = '---\nfoo: bar\n---\n\n# Title\n';
-    const result = updateFrontmatter(content, { id: '', display_name: '', version: '', description: '' });
+    const result = updateFrontmatter(content, {
+      id: '',
+      display_name: '',
+      version: '',
+      description: '',
+    });
     expect(result).toBe(content);
   });
 

@@ -4,7 +4,11 @@ import os from 'os';
 import path from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { generateFiles, previewGeneration } from '../src/scaffold/file-generator.js';
-import { compileTemplate, getAvailableTemplates, loadTemplate } from '../src/scaffold/template-engine.js';
+import {
+  compileTemplate,
+  getAvailableTemplates,
+  loadTemplate,
+} from '../src/scaffold/template-engine.js';
 import type { ScaffoldConfig } from '../src/types/domain.js';
 
 const tempDirs: string[] = [];

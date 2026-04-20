@@ -137,7 +137,7 @@ function buildAgentsMdContext(config: ScaffoldConfig): Record<string, string | s
  */
 function buildSkillMdContext(
   config: ScaffoldConfig,
-  skill: { skillId: string; displayName: string; skillType: string; description?: string }
+  skill: { skillId: string; displayName: string; skillType: string; description?: string },
 ): Record<string, string | string[]> {
   return {
     skillId: skill.skillId,

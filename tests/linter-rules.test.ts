@@ -9,7 +9,13 @@ function makeAgentDoc(overrides: Partial<AgentsMdDocument> = {}): AgentsMdDocume
   return {
     path: 'AGENTS.md',
     raw: '# Agent\n\n## What this is\n\nTest.\n',
-    frontmatter: { id: 'a', display_name: 'A', version: '1.0.0', description: 'Test agent description here', raw: '' },
+    frontmatter: {
+      id: 'a',
+      display_name: 'A',
+      version: '1.0.0',
+      description: 'Test agent description here',
+      raw: '',
+    },
     title: 'Agent',
     sections: [],
     tables: [],
@@ -22,7 +28,13 @@ function makeSkillDoc(overrides: Partial<SkillMdDocument> = {}): SkillMdDocument
   return {
     path: 'skills/echo/skill.md',
     raw: '# Skill\n\n## Capability\n\nTest.\n',
-    frontmatter: { id: 's', display_name: 'S', version: '1.0.0', description: 'A test skill description', raw: '' },
+    frontmatter: {
+      id: 's',
+      display_name: 'S',
+      version: '1.0.0',
+      description: 'A test skill description',
+      raw: '',
+    },
     title: 'Skill',
     sections: [],
     tables: [],
@@ -48,7 +60,9 @@ describe('auto-fix', () => {
     const content = '# Title\n\n```\nconst x = 1;\n```\n';
     const result = runAutoFix(content, ['no-code-language']);
     expect(result).toContain('```text');
-    expect(result.indexOf('```text')).toBeLessThan(result.indexOf('```', result.indexOf('```text') + 10));
+    expect(result.indexOf('```text')).toBeLessThan(
+      result.indexOf('```', result.indexOf('```text') + 10),
+    );
   });
 
   it('preserves code blocks that already have a language', () => {
@@ -81,7 +95,8 @@ describe('auto-fix', () => {
   });
 
   it('does not add sections when none are missing', () => {
-    const content = '---\nagent_id: "test"\n---\n\n# Test\n\n## What this is\n\nx.\n\n## Architecture Overview\n\nx.\n\n## Skill System\n\nx.\n\n## MCP Integration\n\nx.\n\n## Security Considerations\n\nx.\n\n## Observability\n\nx.\n\n## Checklist: Production Readiness\n\nx.\n';
+    const content =
+      '---\nagent_id: "test"\n---\n\n# Test\n\n## What this is\n\nx.\n\n## Architecture Overview\n\nx.\n\n## Skill System\n\nx.\n\n## MCP Integration\n\nx.\n\n## Security Considerations\n\nx.\n\n## Observability\n\nx.\n\n## Checklist: Production Readiness\n\nx.\n';
     const result = runAutoFix(content, ['heading-missing']);
     expect(result).toBe(content);
   });
@@ -114,8 +129,20 @@ describe('content rules', () => {
     const doc = makeAgentDoc({
       raw: '# Agent\n\n## What this is\n\nA.\n\n## What this is\n\nB.\n',
       sections: [
-        { title: 'What this is', level: 2, content: 'A.', location: { line: 3, endLine: 3 }, subsections: [] },
-        { title: 'What this is', level: 2, content: 'B.', location: { line: 7, endLine: 7 }, subsections: [] },
+        {
+          title: 'What this is',
+          level: 2,
+          content: 'A.',
+          location: { line: 3, endLine: 3 },
+          subsections: [],
+        },
+        {
+          title: 'What this is',
+          level: 2,
+          content: 'B.',
+          location: { line: 7, endLine: 7 },
+          subsections: [],
+        },
       ],
     });
     const result = runLintRules(doc);
@@ -125,7 +152,13 @@ describe('content rules', () => {
   it('detects missing required sections for agents', () => {
     const doc = makeAgentDoc({
       sections: [
-        { title: 'What this is', level: 2, content: 'Test.', location: { line: 3, endLine: 3 }, subsections: [] },
+        {
+          title: 'What this is',
+          level: 2,
+          content: 'Test.',
+          location: { line: 3, endLine: 3 },
+          subsections: [],
+        },
       ],
     });
     const result = runLintRules(doc);
@@ -135,7 +168,13 @@ describe('content rules', () => {
   it('detects missing required sections for skills', () => {
     const doc = makeSkillDoc({
       sections: [
-        { title: 'Capability', level: 2, content: 'Test.', location: { line: 3, endLine: 3 }, subsections: [] },
+        {
+          title: 'Capability',
+          level: 2,
+          content: 'Test.',
+          location: { line: 3, endLine: 3 },
+          subsections: [],
+        },
       ],
     });
     const result = runLintRules(doc);
@@ -145,7 +184,13 @@ describe('content rules', () => {
   it('detects empty sections', () => {
     const doc = makeAgentDoc({
       sections: [
-        { title: 'Empty', level: 2, content: '', location: { line: 3, endLine: 3 }, subsections: [] },
+        {
+          title: 'Empty',
+          level: 2,
+          content: '',
+          location: { line: 3, endLine: 3 },
+          subsections: [],
+        },
       ],
     });
     const result = runLintRules(doc);
@@ -156,7 +201,13 @@ describe('content rules', () => {
     const doc = makeAgentDoc({
       raw: '# Agent\n\n## Section\n\nTODO: implement this\n',
       sections: [
-        { title: 'Section', level: 2, content: 'TODO: implement this', location: { line: 3, endLine: 4 }, subsections: [] },
+        {
+          title: 'Section',
+          level: 2,
+          content: 'TODO: implement this',
+          location: { line: 3, endLine: 4 },
+          subsections: [],
+        },
       ],
     });
     const result = runLintRules(doc);
@@ -166,7 +217,13 @@ describe('content rules', () => {
   it('skips broken-skill-ref for skill documents', () => {
     const doc = makeSkillDoc({
       sections: [
-        { title: 'Skill System', level: 2, content: 'skills/test/skill.md', location: { line: 3, endLine: 3 }, subsections: [] },
+        {
+          title: 'Skill System',
+          level: 2,
+          content: 'skills/test/skill.md',
+          location: { line: 3, endLine: 3 },
+          subsections: [],
+        },
       ],
       tables: [],
     });
@@ -183,7 +240,13 @@ describe('content rules', () => {
     const doc = makeAgentDoc({
       raw: '# Agent\n\n## Skill System\n\nSee table.\n',
       sections: [
-        { title: 'Skill System', level: 2, content: 'See table.', location: { line: 3, endLine: 5 }, subsections: [] },
+        {
+          title: 'Skill System',
+          level: 2,
+          content: 'See table.',
+          location: { line: 3, endLine: 5 },
+          subsections: [],
+        },
       ],
       tables: [table],
     });
@@ -194,7 +257,10 @@ describe('content rules', () => {
   it('detects duplicate skill IDs in tables', () => {
     const table: MarkdownTable = {
       headers: ['Skill ID', 'File'],
-      rows: [['echo', 'skills/echo/skill.md'], ['echo', 'skills/echo2/skill.md']],
+      rows: [
+        ['echo', 'skills/echo/skill.md'],
+        ['echo', 'skills/echo2/skill.md'],
+      ],
       location: { line: 10, endLine: 12 },
     };
     const doc = makeAgentDoc({
@@ -217,8 +283,20 @@ describe('content rules', () => {
   it('detects section ordering issues', () => {
     const doc = makeAgentDoc({
       sections: [
-        { title: 'Observability', level: 2, content: 'Logs.', location: { line: 3, endLine: 3 }, subsections: [] },
-        { title: 'Architecture Overview', level: 2, content: 'Design.', location: { line: 5, endLine: 5 }, subsections: [] },
+        {
+          title: 'Observability',
+          level: 2,
+          content: 'Logs.',
+          location: { line: 3, endLine: 3 },
+          subsections: [],
+        },
+        {
+          title: 'Architecture Overview',
+          level: 2,
+          content: 'Design.',
+          location: { line: 5, endLine: 5 },
+          subsections: [],
+        },
       ],
     });
     const result = runLintRules(doc);
@@ -228,8 +306,20 @@ describe('content rules', () => {
   it('skips section-ordering for skill documents', () => {
     const doc = makeSkillDoc({
       sections: [
-        { title: 'Observability', level: 2, content: 'Logs.', location: { line: 3, endLine: 3 }, subsections: [] },
-        { title: 'Architecture Overview', level: 2, content: 'Design.', location: { line: 5, endLine: 5 }, subsections: [] },
+        {
+          title: 'Observability',
+          level: 2,
+          content: 'Logs.',
+          location: { line: 3, endLine: 3 },
+          subsections: [],
+        },
+        {
+          title: 'Architecture Overview',
+          level: 2,
+          content: 'Design.',
+          location: { line: 5, endLine: 5 },
+          subsections: [],
+        },
       ],
     });
     const result = runLintRules(doc);
@@ -239,9 +329,27 @@ describe('content rules', () => {
   it('no ordering warning when sections are in correct order', () => {
     const doc = makeAgentDoc({
       sections: [
-        { title: 'What this is', level: 2, content: 'Desc.', location: { line: 3, endLine: 3 }, subsections: [] },
-        { title: 'Architecture Overview', level: 2, content: 'Design.', location: { line: 5, endLine: 5 }, subsections: [] },
-        { title: 'Skill System', level: 2, content: 'Skills.', location: { line: 7, endLine: 7 }, subsections: [] },
+        {
+          title: 'What this is',
+          level: 2,
+          content: 'Desc.',
+          location: { line: 3, endLine: 3 },
+          subsections: [],
+        },
+        {
+          title: 'Architecture Overview',
+          level: 2,
+          content: 'Design.',
+          location: { line: 5, endLine: 5 },
+          subsections: [],
+        },
+        {
+          title: 'Skill System',
+          level: 2,
+          content: 'Skills.',
+          location: { line: 7, endLine: 7 },
+          subsections: [],
+        },
       ],
     });
     const result = runLintRules(doc);
@@ -251,7 +359,13 @@ describe('content rules', () => {
   it('detects min-content-length in short sections', () => {
     const doc = makeAgentDoc({
       sections: [
-        { title: 'Short', level: 2, content: 'x', location: { line: 3, endLine: 3 }, subsections: [] },
+        {
+          title: 'Short',
+          level: 2,
+          content: 'x',
+          location: { line: 3, endLine: 3 },
+          subsections: [],
+        },
       ],
     });
     const result = runLintRules(doc);

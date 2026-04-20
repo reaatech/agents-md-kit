@@ -7,7 +7,11 @@ import path from 'path';
 import { parseMarkdown } from '../parser/markdown-parser.js';
 import { runAutoFix, getAutoFixableRules } from '../linter/auto-fix.js';
 import { runLintRules } from '../linter/index.js';
-import { generateFiles, previewGeneration, type GenerateResult } from '../scaffold/file-generator.js';
+import {
+  generateFiles,
+  previewGeneration,
+  type GenerateResult,
+} from '../scaffold/file-generator.js';
 import { validate } from '../validator/schema-validator.js';
 import type {
   AgentsMdDocument,
@@ -25,9 +29,7 @@ const SEVERITY_ORDER: Record<Severity, number> = {
   suggestion: 3,
 };
 
-export async function parseFile(
-  filePath: string
-): Promise<AgentsMdDocument | SkillMdDocument> {
+export async function parseFile(filePath: string): Promise<AgentsMdDocument | SkillMdDocument> {
   const content = await readFile(filePath, 'utf-8');
   return parseMarkdown(content, filePath);
 }
@@ -42,10 +44,7 @@ export async function lintDirectory(dirPath: string): Promise<LintResult[]> {
   return Promise.all(files.map((file) => lintFile(file)));
 }
 
-export async function validateFile(
-  filePath: string,
-  strict = false
-): Promise<ValidationResult> {
+export async function validateFile(filePath: string, strict = false): Promise<ValidationResult> {
   const document = await parseFile(filePath);
   return validate(document, {
     strict,
@@ -55,7 +54,7 @@ export async function validateFile(
 
 export async function validateDirectory(
   dirPath: string,
-  strict = false
+  strict = false,
 ): Promise<ValidationResult[]> {
   const files = await findMarkdownFiles(dirPath);
   return Promise.all(files.map((file) => validateFile(file, strict)));
@@ -63,7 +62,7 @@ export async function validateDirectory(
 
 export function scaffoldAgent(
   config: ScaffoldConfig,
-  dryRun = false
+  dryRun = false,
 ): GenerateResult | Array<{ path: string; exists: boolean }> {
   if (dryRun) {
     return previewGeneration(config);
@@ -74,7 +73,7 @@ export function scaffoldAgent(
 
 export async function applyFixesToFile(
   filePath: string,
-  ruleIds: string[]
+  ruleIds: string[],
 ): Promise<{ original: string; fixed: string }> {
   const original = await readFile(filePath, 'utf-8');
   return {
@@ -93,7 +92,7 @@ export function getFixableRules(): string[] {
 
 export function filterLintResult(result: LintResult, minimumSeverity: Severity): LintResult {
   const findings = result.findings.filter(
-    (finding) => SEVERITY_ORDER[finding.severity] <= SEVERITY_ORDER[minimumSeverity]
+    (finding) => SEVERITY_ORDER[finding.severity] <= SEVERITY_ORDER[minimumSeverity],
   );
 
   return {

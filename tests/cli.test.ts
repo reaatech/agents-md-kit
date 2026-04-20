@@ -22,12 +22,10 @@ afterEach(async () => {
 describe('CLI commands', () => {
   it('runs lint with json output', async () => {
     const examplePath = path.join(process.cwd(), 'examples', 'gallery', 'mcp-server', 'AGENTS.md');
-    const output = await runCommand((program) => lintCommand(program), [
-      'lint',
-      examplePath,
-      '--format',
-      'json',
-    ]);
+    const output = await runCommand(
+      (program) => lintCommand(program),
+      ['lint', examplePath, '--format', 'json'],
+    );
 
     const parsed = JSON.parse(output) as Array<{ path: string; errorCount: number }>;
     expect(parsed[0]?.path).toBe(examplePath);
@@ -42,14 +40,12 @@ describe('CLI commands', () => {
       'mcp-server',
       'skills',
       'echo',
-      'skill.md'
+      'skill.md',
     );
-    const output = await runCommand((program) => validateCommand(program), [
-      'validate',
-      examplePath,
-      '--format',
-      'json',
-    ]);
+    const output = await runCommand(
+      (program) => validateCommand(program),
+      ['validate', examplePath, '--format', 'json'],
+    );
 
     const parsed = JSON.parse(output) as Array<{ valid: boolean; type: string }>;
     expect(parsed[0]?.valid).toBe(true);
@@ -70,29 +66,30 @@ describe('CLI commands', () => {
 
   it('supports scaffold dry-run output', async () => {
     const dir = createTempDir();
-    const output = await runCommand((program) => scaffoldCommand(program), [
-      'scaffold',
-      dir,
-      '--dry-run',
-    ]);
+    const output = await runCommand(
+      (program) => scaffoldCommand(program),
+      ['scaffold', dir, '--dry-run'],
+    );
 
     expect(output).toContain('AGENTS.md');
     expect(output).toContain('skills/example/skill.md');
   });
 
   it('lists examples', async () => {
-    const output = await runCommand((program) => examplesCommand(program), ['examples', 'mcp-server']);
+    const output = await runCommand(
+      (program) => examplesCommand(program),
+      ['examples', 'mcp-server'],
+    );
     expect(output).toContain('mcp-server');
     expect(output).toContain('Skills:');
   });
 
   it('shows and copies examples', async () => {
     const examplesDir = path.join(process.cwd(), 'examples/gallery');
-    const showOutput = await runCommand((program) => examplesCommand(program), [
-      'examples',
-      '--show',
-      'mcp-server/AGENTS.md',
-    ]);
+    const showOutput = await runCommand(
+      (program) => examplesCommand(program),
+      ['examples', '--show', 'mcp-server/AGENTS.md'],
+    );
     expect(showOutput).toContain('# Example MCP Server');
 
     const dir = createTempDir();
@@ -101,13 +98,14 @@ describe('CLI commands', () => {
     process.chdir(dir);
     process.env.AGENTS_MD_KIT_EXAMPLES = examplesDir;
     try {
-      const copyOutput = await runCommand((program) => examplesCommand(program), [
-        'examples',
-        '--copy',
-        'mcp-server',
-      ]);
+      const copyOutput = await runCommand(
+        (program) => examplesCommand(program),
+        ['examples', '--copy', 'mcp-server'],
+      );
       expect(copyOutput).toContain('Copied');
-      expect(readFileSync(path.join(dir, 'mcp-server', 'AGENTS.md'), 'utf-8')).toContain('# Example MCP Server');
+      expect(readFileSync(path.join(dir, 'mcp-server', 'AGENTS.md'), 'utf-8')).toContain(
+        '# Example MCP Server',
+      );
     } finally {
       process.chdir(originalCwd);
       if (originalExamples !== undefined) {
@@ -119,10 +117,7 @@ describe('CLI commands', () => {
   });
 });
 
-async function runCommand(
-  register: (program: Command) => void,
-  argv: string[]
-): Promise<string> {
+async function runCommand(register: (program: Command) => void, argv: string[]): Promise<string> {
   const program = new Command();
   register(program);
 

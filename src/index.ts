@@ -58,7 +58,10 @@ export const agentsMdKit = {
   },
 
   /** Validate a parsed document */
-  validate: async (document: Awaited<ReturnType<typeof import('./parser/index.js').parseMarkdown>>, options?: import('./validator/schema-validator.js').ValidationOptions) => {
+  validate: async (
+    document: Awaited<ReturnType<typeof import('./parser/index.js').parseMarkdown>>,
+    options?: import('./validator/schema-validator.js').ValidationOptions,
+  ) => {
     const { validate } = await import('./validator/index.js');
     return validate(document, options);
   },

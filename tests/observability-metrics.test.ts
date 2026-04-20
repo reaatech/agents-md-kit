@@ -34,8 +34,8 @@ describe('observability runtime helpers', () => {
         {
           enabled: true,
         },
-        stream
-      )
+        stream,
+      ),
     );
 
     log({

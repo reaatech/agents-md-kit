@@ -5,10 +5,7 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { VERSION } from '../index.js';
 import {
   getExamplesTool,
@@ -36,7 +33,7 @@ export function createMcpServer(): Server {
       capabilities: {
         tools: {},
       },
-    }
+    },
   );
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -51,7 +48,12 @@ export function createMcpServer(): Server {
     const tool = tools.find((candidate) => candidate.name === request.params.name);
     if (!tool) {
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify({ error: `Unknown tool: ${request.params.name}` }) }],
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({ error: `Unknown tool: ${request.params.name}` }),
+          },
+        ],
         isError: true,
       };
     }
@@ -70,7 +72,9 @@ export function createMcpServer(): Server {
   return server;
 }
 
-export async function startMcpServer(transportType: 'stdio' | 'streamable-http' = 'streamable-http'): Promise<void> {
+export async function startMcpServer(
+  transportType: 'stdio' | 'streamable-http' = 'streamable-http',
+): Promise<void> {
   const server = createMcpServer();
 
   async function shutdown() {

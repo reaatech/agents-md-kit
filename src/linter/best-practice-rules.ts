@@ -13,11 +13,13 @@ const missingPiiMentionRule: LintRule = (document) => {
   const findings: ReturnType<LintRule> = [];
 
   // Find security section
-  const securitySection = document.sections?.find(
-    (s) => s.title.toLowerCase().includes('security')
+  const securitySection = document.sections?.find((s) =>
+    s.title.toLowerCase().includes('security'),
   );
 
-  if (!securitySection) {return findings;}
+  if (!securitySection) {
+    return findings;
+  }
 
   const content = (securitySection.content ?? '').toLowerCase();
   const piiKeywords = ['pii', 'personal', 'sensitive', 'data protection', 'gdpr', 'privacy'];
@@ -51,14 +53,23 @@ const missingObservabilityRule: LintRule = (document) => {
   const findings: ReturnType<LintRule> = [];
 
   // Find observability section
-  const observabilitySection = document.sections?.find(
-    (s) => s.title.toLowerCase().includes('observability')
+  const observabilitySection = document.sections?.find((s) =>
+    s.title.toLowerCase().includes('observability'),
   );
 
-  if (!observabilitySection) {return findings;}
+  if (!observabilitySection) {
+    return findings;
+  }
 
   const content = (observabilitySection.content ?? '').toLowerCase();
-  const loggingKeywords = ['structured logging', 'json logging', 'log level', 'logger', 'pino', 'winston'];
+  const loggingKeywords = [
+    'structured logging',
+    'json logging',
+    'log level',
+    'logger',
+    'pino',
+    'winston',
+  ];
   const hasLoggingMention = loggingKeywords.some((keyword) => content.includes(keyword));
 
   if (!hasLoggingMention) {
@@ -89,11 +100,11 @@ const incompleteExamplesRule: LintRule = (document) => {
   const findings: ReturnType<LintRule> = [];
 
   // Find examples section
-  const examplesSection = document.sections?.find(
-    (s) => s.title.toLowerCase().includes('example')
-  );
+  const examplesSection = document.sections?.find((s) => s.title.toLowerCase().includes('example'));
 
-  if (!examplesSection) {return findings;}
+  if (!examplesSection) {
+    return findings;
+  }
 
   const content = (examplesSection.content ?? '').toLowerCase();
   const errorKeywords = ['error', 'fail', 'exception', 'throw', 'catch', 'invalid'];
@@ -127,14 +138,18 @@ const missingMcpSchemaRule: LintRule = (document) => {
   const findings: ReturnType<LintRule> = [];
 
   // Find MCP Integration section
-  const mcpSection = document.sections?.find(
-    (s) => s.title.toLowerCase().includes('mcp')
-  );
+  const mcpSection = document.sections?.find((s) => s.title.toLowerCase().includes('mcp'));
 
-  if (!mcpSection) {return findings;}
+  if (!mcpSection) {
+    return findings;
+  }
 
   const content = mcpSection.content ?? '';
-  const hasSchemaBlock = content.includes('z.object') || content.includes('Input Schema') || content.includes('z.input') || /schema\s*[=:]\s*\{/.test(content);
+  const hasSchemaBlock =
+    content.includes('z.object') ||
+    content.includes('Input Schema') ||
+    content.includes('z.input') ||
+    /schema\s*[=:]\s*\{/.test(content);
 
   if (!hasSchemaBlock) {
     findings.push({
@@ -164,10 +179,10 @@ const missingConfidenceThresholdRule: LintRule = (document) => {
   const findings: ReturnType<LintRule> = [];
 
   // Only applicable to AGENTS.md documents
-  const isSkill =
-    document.path.includes('skill.md') ||
-    document.path.includes('skills/');
-  if (isSkill) { return findings; }
+  const isSkill = document.path.includes('skill.md') || document.path.includes('skills/');
+  if (isSkill) {
+    return findings;
+  }
 
   // Check frontmatter for confidence_threshold
   const raw = document.frontmatter?.raw ?? '';

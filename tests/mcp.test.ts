@@ -98,7 +98,9 @@ describe('MCP tools', () => {
       content: '# Example\n\n## Section\n\nTODO: fix\n',
       severity: 'warning',
     });
-    const payload = JSON.parse(response.content[0]?.text ?? '{}') as { findings: Array<{ severity: string }> };
+    const payload = JSON.parse(response.content[0]?.text ?? '{}') as {
+      findings: Array<{ severity: string }>;
+    };
     for (const f of payload.findings) {
       expect(['error', 'warning']).toContain(f.severity);
     }
@@ -111,9 +113,7 @@ describe('MCP tools', () => {
       displayName: 'Test Agent',
       agentType: 'orchestrator',
       outputDir,
-      skills: [
-        { skillId: 'routing', displayName: 'Routing', skillType: 'routing' },
-      ],
+      skills: [{ skillId: 'routing', displayName: 'Routing', skillType: 'routing' }],
     });
     const payload = JSON.parse(response.content[0]?.text ?? '{}') as { created: string[] };
     expect(payload.created.length).toBeGreaterThan(0);

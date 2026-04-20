@@ -8,10 +8,7 @@ import {
   getAutoFixableFindings,
 } from '../src/validator/error-formatter.js';
 import { createError, createFixableFinding } from '../src/validator/schema-validator.js';
-import {
-  AgentsMdFrontmatterSchema,
-  SkillMdFrontmatterSchema,
-} from '../src/types/schemas.js';
+import { AgentsMdFrontmatterSchema, SkillMdFrontmatterSchema } from '../src/types/schemas.js';
 import type { ValidationResult } from '../src/types/domain.js';
 
 describe('validator helpers', () => {
@@ -22,7 +19,7 @@ describe('validator helpers', () => {
       'Something happened',
       { line: 2, column: 4 },
       'Fix it',
-      { type: 'replace', line: 2, content: 'replacement' }
+      { type: 'replace', line: 2, content: 'replacement' },
     );
     const result: ValidationResult = {
       valid: false,
@@ -37,7 +34,9 @@ describe('validator helpers', () => {
     expect(formatValidationSummary(result)).toContain('invalid');
     expect(formatFindingsGrouped([finding])).toContain('Warnings');
     expect(formatWithContext(finding, 'line1\nline2\nline3')).toContain('Context');
-    expect(createErrorReport([result], { includeContext: true, content: 'a\nb\nc' })).toContain('SUMMARY');
+    expect(createErrorReport([result], { includeContext: true, content: 'a\nb\nc' })).toContain(
+      'SUMMARY',
+    );
     expect(getAutoFixableFindings([result])).toHaveLength(1);
   });
 
@@ -48,7 +47,7 @@ describe('validator helpers', () => {
         display_name: 'Agent',
         version: '1.0.0',
         description: 'A valid description',
-      })
+      }),
     ).not.toThrow();
 
     expect(() =>
@@ -58,7 +57,7 @@ describe('validator helpers', () => {
         version: '1.0.0',
         description: 'A valid description',
         category: 'tool',
-      })
+      }),
     ).not.toThrow();
   });
 });

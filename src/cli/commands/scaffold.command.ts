@@ -16,48 +16,61 @@ export function scaffoldCommand(program: Command): void {
     .argument('<output>', 'Output directory for generated files')
     .option('--agent-id <id>', 'Agent identifier', 'my-agent')
     .option('--display-name <name>', 'Agent display name', 'My Agent')
-    .option('--agent-type <type>', 'Agent type (mcp, orchestrator, classifier, router, evaluator)', 'mcp')
+    .option(
+      '--agent-type <type>',
+      'Agent type (mcp, orchestrator, classifier, router, evaluator)',
+      'mcp',
+    )
     .option('--description <desc>', 'Agent description')
     .option('--version <version>', 'Agent version', '1.0.0')
     .option('--skills <skills>', 'Comma-separated list of skill IDs', 'example')
     .option('--dry-run', 'Preview files without writing them', false)
     .option('--overwrite', 'Overwrite existing files', false)
-    .action(async (output: string, options: {
-      agentId: string;
-      displayName: string;
-      agentType: string;
-      description?: string;
-      version: string;
-      skills: string;
-      dryRun: boolean;
-      overwrite: boolean;
-    }) => {
-      const outputDir = path.resolve(output);
-      if (!options.dryRun && !options.overwrite && await hasVisibleFiles(outputDir)) {
-        throw new Error(`Output directory is not empty: ${outputDir}. Use --overwrite to replace files.`);
-      }
+    .action(
+      async (
+        output: string,
+        options: {
+          agentId: string;
+          displayName: string;
+          agentType: string;
+          description?: string;
+          version: string;
+          skills: string;
+          dryRun: boolean;
+          overwrite: boolean;
+        },
+      ) => {
+        const outputDir = path.resolve(output);
+        if (!options.dryRun && !options.overwrite && (await hasVisibleFiles(outputDir))) {
+          throw new Error(
+            `Output directory is not empty: ${outputDir}. Use --overwrite to replace files.`,
+          );
+        }
 
-      const config = buildScaffoldConfig(outputDir, options);
-      const result = scaffoldAgent(config, options.dryRun);
+        const config = buildScaffoldConfig(outputDir, options);
+        const result = scaffoldAgent(config, options.dryRun);
 
-      if (options.dryRun) {
-        const preview = result as Array<{ path: string; exists: boolean }>;
-        const lines = preview.map((file) => `${file.exists ? 'EXISTS' : 'NEW'} ${file.path}`);
-        process.stdout.write(`${lines.join('\n')}\n`);
-        return;
-      }
+        if (options.dryRun) {
+          const preview = result as Array<{ path: string; exists: boolean }>;
+          const lines = preview.map((file) => `${file.exists ? 'EXISTS' : 'NEW'} ${file.path}`);
+          process.stdout.write(`${lines.join('\n')}\n`);
+          return;
+        }
 
-      const generated = result as {
-        created: string[];
-        skipped: string[];
-        errors: Array<{ path: string; error: string }>;
-      };
-      process.stdout.write(`${reportScaffoldResult(generated.created, generated.skipped, generated.errors)}\n`);
+        const generated = result as {
+          created: string[];
+          skipped: string[];
+          errors: Array<{ path: string; error: string }>;
+        };
+        process.stdout.write(
+          `${reportScaffoldResult(generated.created, generated.skipped, generated.errors)}\n`,
+        );
 
-      if (generated.errors.length > 0) {
-        process.exit(1);
-      }
-    });
+        if (generated.errors.length > 0) {
+          process.exit(1);
+        }
+      },
+    );
 }
 
 function buildScaffoldConfig(
@@ -70,7 +83,7 @@ function buildScaffoldConfig(
     version: string;
     skills: string;
     overwrite: boolean;
-  }
+  },
 ): ScaffoldConfig {
   const skills = options.skills
     .split(',')

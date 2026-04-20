@@ -34,7 +34,12 @@ export const getExamplesTool = {
       const resolvedPath = path.resolve(examplesDir, parsed.show);
       if (!resolvedPath.startsWith(examplesDir + path.sep) && resolvedPath !== examplesDir) {
         return {
-          content: [{ type: 'text' as const, text: JSON.stringify({ error: 'Invalid path: path traversal detected' }) }],
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({ error: 'Invalid path: path traversal detected' }),
+            },
+          ],
           isError: true,
         };
       }
@@ -61,9 +66,8 @@ export const getExamplesTool = {
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
       .sort();
-    const filteredTypes = parsed.type !== undefined
-      ? types.filter((type) => type === parsed.type)
-      : types;
+    const filteredTypes =
+      parsed.type !== undefined ? types.filter((type) => type === parsed.type) : types;
 
     return {
       content: [

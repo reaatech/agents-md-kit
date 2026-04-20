@@ -12,8 +12,9 @@ import { runLintRules } from '../src/linter/index.js';
 describe('Performance Tests', () => {
   // Generate a large markdown file for testing
   function generateLargeMarkdown(sizeKB: number): string {
-    let content = '---\nagent_id: perf-test\ndisplay_name: Performance Test\nversion: 1.0.0\n---\n\n# Performance Test Agent\n\n## What this is\n\nA test agent for performance benchmarking.\n\n';
-    
+    let content =
+      '---\nagent_id: perf-test\ndisplay_name: Performance Test\nversion: 1.0.0\n---\n\n# Performance Test Agent\n\n## What this is\n\nA test agent for performance benchmarking.\n\n';
+
     const sectionTemplate = `
 ## Section {n}
 
@@ -56,11 +57,11 @@ function example{n}() {{
     it('should parse a 100KB+ markdown file', async () => {
       const content = generateLargeMarkdown(100);
       const start = performance.now();
-      
+
       const document = await parseMarkdown(content, 'large-test.md');
-      
+
       const duration = performance.now() - start;
-      
+
       expect(document).toBeDefined();
       expect(document.path).toBe('large-test.md');
       // Should complete in under 1 second
@@ -71,11 +72,11 @@ function example{n}() {{
       const content = generateLargeMarkdown(100);
       const document = await parseMarkdown(content, 'large-test.md');
       const start = performance.now();
-      
+
       const result = runLintRules(document);
-      
+
       const duration = performance.now() - start;
-      
+
       expect(result).toBeDefined();
       // Should complete in under 2 seconds
       expect(duration).toBeLessThan(2000);
@@ -85,11 +86,11 @@ function example{n}() {{
       const content = generateLargeMarkdown(100);
       const document = await parseMarkdown(content, 'large-test.md');
       const start = performance.now();
-      
+
       const result = validate(document, { strict: false });
-      
+
       const duration = performance.now() - start;
-      
+
       expect(result).toBeDefined();
       // Should complete in under 1 second
       expect(duration).toBeLessThan(1000);

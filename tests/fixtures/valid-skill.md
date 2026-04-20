@@ -1,9 +1,9 @@
 ---
-skill_id: "test-echo"
-display_name: "Test Echo Skill"
-version: "1.0.0"
-description: "A test echo skill used for validating the agents-md-kit parser and validator"
-category: "tool"
+skill_id: 'test-echo'
+display_name: 'Test Echo Skill'
+version: '1.0.0'
+description: 'A test echo skill used for validating the agents-md-kit parser and validator'
+category: 'tool'
 ---
 
 # Test Echo Skill
@@ -14,10 +14,10 @@ Echoes back the input message, optionally transforming it. Used for testing conn
 
 ## MCP Tools
 
-| Tool | Input Schema | Output | Rate Limit |
-|------|-------------|--------|------------|
-| `echo` | `z.object({ message: z.string() })` | `{ echo: string }` | 60 RPM |
-| `echo_upper` | `z.object({ message: z.string() })` | `{ echo: string }` | 60 RPM |
+| Tool         | Input Schema                        | Output             | Rate Limit |
+| ------------ | ----------------------------------- | ------------------ | ---------- |
+| `echo`       | `z.object({ message: z.string() })` | `{ echo: string }` | 60 RPM     |
+| `echo_upper` | `z.object({ message: z.string() })` | `{ echo: string }` | 60 RPM     |
 
 ## Usage Examples
 
@@ -61,11 +61,11 @@ Echoes back the input message, optionally transforming it. Used for testing conn
 
 ## Error Handling
 
-| Error Type | Recovery Strategy |
-|------------|-------------------|
+| Error Type          | Recovery Strategy                       |
+| ------------------- | --------------------------------------- |
 | Missing input field | Return validation error with field name |
-| Input too long | Truncate and warn |
-| Rate limit exceeded | Return 429 with retry-after header |
+| Input too long      | Truncate and warn                       |
+| Rate limit exceeded | Return 429 with retry-after header      |
 
 ## Security Considerations
 

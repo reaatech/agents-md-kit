@@ -26,7 +26,7 @@ export interface ParseResult {
  */
 export async function parseMarkdown(
   content: string,
-  path: string
+  path: string,
 ): Promise<AgentsMdDocument | SkillMdDocument> {
   // Parse markdown to AST
   const processor = remark().use(remarkFrontmatter, ['yaml']);
@@ -85,7 +85,7 @@ export async function parseMarkdown(
  * Parse multiple markdown files
  */
 export async function parseMarkdownFiles(
-  files: Array<{ content: string; path: string }>
+  files: Array<{ content: string; path: string }>,
 ): Promise<Array<AgentsMdDocument | SkillMdDocument>> {
   return Promise.all(files.map((file) => parseMarkdown(file.content, file.path)));
 }
@@ -115,7 +115,7 @@ function extractTitle(ast: Root): string | null {
 function determineDocumentType(
   frontmatter: AgentsMdDocument['frontmatter'],
   sections: Section[],
-  path: string
+  path: string,
 ): 'agents' | 'skill' | 'unknown' {
   // Check path for hints
   if (path.includes('skill.md') || path.includes('skills/')) {
@@ -160,7 +160,7 @@ export function getSectionTitles(document: AgentsMdDocument | SkillMdDocument): 
  */
 export function findSection(
   document: AgentsMdDocument | SkillMdDocument,
-  title: string
+  title: string,
 ): Section | undefined {
   const lowerTitle = title.toLowerCase();
   return document.sections.find((s) => s.title.toLowerCase() === lowerTitle);

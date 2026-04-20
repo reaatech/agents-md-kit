@@ -57,7 +57,9 @@ Content for section two.
   });
 
   it('should find sections by title', () => {
-    const sections = extractSections(`## What this is\n\nContent.\n\n## Architecture Overview\n\nDetails.`);
+    const sections = extractSections(
+      `## What this is\n\nContent.\n\n## Architecture Overview\n\nDetails.`,
+    );
 
     expect(hasSection(sections, 'What this is')).toBe(true);
     expect(hasSection(sections, 'what this is')).toBe(true); // case insensitive

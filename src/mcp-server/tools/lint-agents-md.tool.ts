@@ -51,11 +51,12 @@ export const lintAgentsMdTool = {
       const result = runLintRules(document);
 
       const severity = parsed.severity;
-      const findings = severity !== undefined
-        ? result.findings.filter(
-          (finding) => severityOrder[finding.severity] <= severityOrder[severity]
-        )
-        : result.findings;
+      const findings =
+        severity !== undefined
+          ? result.findings.filter(
+              (finding) => severityOrder[finding.severity] <= severityOrder[severity],
+            )
+          : result.findings;
 
       return {
         content: [
@@ -71,7 +72,7 @@ export const lintAgentsMdTool = {
                 fixableCount: findings.filter((finding) => finding.autoFixable).length,
               },
               null,
-              2
+              2,
             ),
           },
         ],
