@@ -55,7 +55,7 @@
     "remark-parse": "^11.0.0",
     "unified": "^11.0.4",
     "yaml": "^2.4.0",
-    "zod": "^3.23.0"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/cli-progress": "^3.11.5",
