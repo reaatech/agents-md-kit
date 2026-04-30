@@ -12,7 +12,7 @@ import { bench, describe, expect, it } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = resolve(__filename, '..');
-const rootDir = resolve(__dirname, '..');
+const rootDir = resolve(__dirname, '..', '..');
 
 describe('Performance Tests', () => {
   // Generate a large markdown file for testing

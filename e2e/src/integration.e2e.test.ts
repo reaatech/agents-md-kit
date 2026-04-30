@@ -14,7 +14,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = resolve(__filename, '..');
-const rootDir = resolve(__dirname, '..');
+const rootDir = resolve(__dirname, '..', '..');
 const testDir = join(rootDir, 'tests', 'fixtures', 'integration');
 
 describe('Integration Tests', () => {
@@ -133,7 +133,7 @@ describe('Integration Tests', () => {
 
   describe('Batch processing', () => {
     it('should process multiple files', async () => {
-      const examplesDir = join(rootDir, 'examples', 'gallery');
+      const examplesDir = join(rootDir, 'examples');
       const agentTypes = ['mcp-server', 'orchestrator', 'classifier', 'router', 'evaluator'];
 
       for (const type of agentTypes) {
