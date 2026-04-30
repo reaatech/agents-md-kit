@@ -29,7 +29,7 @@ describe('Integration Tests', () => {
   describe('End-to-end linting flow', () => {
     it('should lint a valid AGENTS.md file', async () => {
       const content = readFileSync(
-        join(process.cwd(), 'examples', 'gallery', 'mcp-server', 'AGENTS.md'),
+        join(process.cwd(), 'examples', 'mcp-server', 'AGENTS.md'),
         'utf-8'
       );
       const document = await parseMarkdown(content, 'AGENTS.md');
@@ -42,7 +42,7 @@ describe('Integration Tests', () => {
 
     it('should lint a valid SKILL.md file', async () => {
       const content = readFileSync(
-        join(process.cwd(), 'examples', 'gallery', 'mcp-server', 'skills', 'echo', 'skill.md'),
+        join(process.cwd(), 'examples', 'mcp-server', 'skills', 'echo', 'skill.md'),
         'utf-8'
       );
       const document = await parseMarkdown(content, 'skill.md');
@@ -56,7 +56,7 @@ describe('Integration Tests', () => {
   describe('End-to-end validation flow', () => {
     it('should validate a valid AGENTS.md file', async () => {
       const content = readFileSync(
-        join(process.cwd(), 'examples', 'gallery', 'mcp-server', 'AGENTS.md'),
+        join(process.cwd(), 'examples', 'mcp-server', 'AGENTS.md'),
         'utf-8'
       );
       const document = await parseMarkdown(content, 'AGENTS.md');
@@ -69,7 +69,7 @@ describe('Integration Tests', () => {
 
     it('should validate a valid SKILL.md file', async () => {
       const content = readFileSync(
-        join(process.cwd(), 'examples', 'gallery', 'mcp-server', 'skills', 'echo', 'skill.md'),
+        join(process.cwd(), 'examples', 'mcp-server', 'skills', 'echo', 'skill.md'),
         'utf-8'
       );
       const document = await parseMarkdown(content, 'skill.md');
