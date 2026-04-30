@@ -10,81 +10,70 @@ category: "tool"
 
 ## Capability
 
-Synchronizes documentation with code changes by validating cross-references, checking links, and ensuring version consistency across AGENTS.md and SKILL.md files.
+Synchronizes documentation with code changes by validating cross-references, checking links, and ensuring version consistency across AGENTS.md, SKILL.md, README.md, and package.json files throughout the monorepo.
 
 ## MCP Tools
 
 | Tool | Input Schema | Output | Rate Limit |
 |------|-------------|--------|------------|
-| `sync_versions` | `z.object({ project_path: z.string(), dry_run: z.boolean().optional() })` | `{ files_updated: string[], changes: VersionChange[], errors: string[] }` | 30 RPM |
-| `validate_refs` | `z.object({ project_path: z.string(), check_internal: z.boolean().optional(), check_external: z.boolean().optional() })` | `{ broken_refs: BrokenRef[], valid_refs: number, warnings: string[] }` | 30 RPM |
-| `check_links` | `z.object({ project_path: z.string(), timeout_ms: z.number().optional(), check_external: z.boolean().optional() })` | `{ broken_links: BrokenLink[], valid_links: number, warnings: string[] }` | 15 RPM |
-| `detect_stale_docs` | `z.object({ project_path: z.string(), lookback_days: z.number().optional() })` | `{ stale_files: StaleDoc[], recommendations: string[] }` | 30 RPM |
+| `lint_agents_md` | `z.object({ filePath: z.string().optional(), content: z.string().optional(), severity: z.enum(['error','warning','info','suggestion']).optional() })` | `{ path: string, findings: Finding[], errorCount: number, warningCount: number, infoCount: number, fixableCount: number }` | 60 RPM |
+
+The linting tool validates cross-references (broken skill refs, duplicate skill IDs) and structural issues.
 
 ## Usage Examples
 
-### Example 1: Sync versions across project files
-
-- **User intent:** Ensure package.json version matches AGENTS.md frontmatter version
-- **Tool call:**
-  ```json
-  {
-    "name": "sync_versions",
-    "arguments": {
-      "project_path": "/Users/rick/dev/2026-04/agents-md-kit",
-      "dry_run": true
-    }
-  }
-  ```
-- **Expected response:**
-  ```json
-  {
-    "files_updated": ["AGENTS.md"],
-    "changes": [
-      {
-        "file": "AGENTS.md",
-        "field": "version",
-        "old_value": "0.9.0",
-        "new_value": "1.0.0",
-        "source": "package.json"
-      }
-    ],
-    "errors": []
-  }
-  ```
-
-### Example 2: Validate all cross-references
+### Example 1: Validate all cross-references in a monorepo
 
 - **User intent:** Check that all skill references in AGENTS.md point to existing files
 - **Tool call:**
   ```json
   {
-    "name": "validate_refs",
+    "name": "lint_agents_md",
     "arguments": {
-      "project_path": "/Users/rick/dev/2026-04/agents-md-kit",
-      "check_internal": true,
-      "check_external": false
+      "filePath": "./AGENTS.md",
+      "severity": "info"
     }
   }
   ```
 - **Expected response:**
-  ```json
-  {
-    "broken_refs": [
-      {
-        "file": "AGENTS.md",
-        "line": 470,
-        "ref": "docs/MISSING.md",
-        "type": "file",
-        "context": "See [docs/MISSING.md] for details"
-      }
-    ],
-    "valid_refs": 12,
-    "warnings": [
-      "skills/examples/skill.md references non-existent template file"
-    ]
-  }
+
+  Returns findings including `broken-skill-ref` for any skill references that don't resolve to existing files, and `duplicate-skill-id` for duplicate skill IDs.
+
+### Example 2: Validate all example files
+
+- **User intent:** Ensure example AGENTS.md and SKILL.md files pass validation
+- **CLI command:**
+  ```bash
+  agents-md-kit lint ./examples/ --fail-on info
+  agents-md-kit validate ./examples/ --strict
   ```
+- **Expected outcome:**
+
+  All example files pass linting and validation. Any failures indicate documentation that's drifted from code changes and needs updating.
+
+### Example 3: Sync versions across files
+
+- **User intent:** Ensure AGENTS.md version matches package.json versions
+- **CLI approach:**
+
+  The CLI validates that frontmatter is well-formed. For version consistency across the monorepo, use Changesets:
+  ```bash
+  pnpm changeset status   # View pending changes
+  pnpm version-packages   # Apply version bumps (auto-updates all package.json + CHANGELOGs)
+  ```
+
+## Documentation Coverage
+
+### Files Monitored
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `AGENTS.md` | Root | Agent instruction file |
+| `ARCHITECTURE.md` | Root | System design deep dive |
+| `README.md` | Root + 9 packages | Package-level documentation |
+| `skills/*/skill.md` | Root | Skill definitions |
+| `examples/*/AGENTS.md` | 5 examples | Reference agents |
+| `examples/*/skills/*/skill.md` | 15 skill files | Reference skills |
 
 ## Error Handling
 
@@ -92,17 +81,17 @@ Synchronizes documentation with code changes by validating cross-references, che
 
 | Failure | Cause | Recovery |
 |---------|-------|----------|
-| No package.json found | Not a Node.js project | Skip version sync for this project type |
-| Git not available | Not a git repository | Skip stale detection, proceed with static checks |
-| Network timeout | External link check takes too long | Skip external links, report timeout warning |
-| Permission denied | Can't read certain files | Report permission error, continue with accessible files |
-| Large project | 1000+ files to check | Use sampling or parallel processing with progress updates |
+| Broken references | Skills renamed or moved | Update skill references in AGENTS.md |
+| Stale examples | Schema changed, examples not updated | Re-validate and fix examples |
+| Missing sections | Template changed, docs not updated | Run lint to detect missing sections |
+| Version mismatch | Manual version update missed a file | Use changesets for consistent versioning |
 
 ### Recovery Strategies
 
-- **Missing package.json:** Check for alternative version sources (Cargo.toml, pyproject.toml, pom.xml)
-- **Network issues:** Cache previous link check results, only re-check changed files
-- **Large projects:** Suggest using `--include` patterns to limit scope
+- **Broken references:** `lint_agents_md` identifies exact broken references with file paths
+- **Stale examples:** Re-run `agents-md-kit lint ./examples/` to surface drift
+- **Missing sections:** Auto-fix for `heading-missing` can insert missing section stubs
+- **Version drift:** Always use `pnpm changeset` for version bumps — never edit versions manually
 
 ## Security Considerations
 
@@ -115,8 +104,7 @@ Synchronizes documentation with code changes by validating cross-references, che
 ### Permissions
 
 - Read-only access for validation operations
-- Write access only required when `dry_run: false` for version sync
-- External link checks should respect robots.txt
+- Write access only required when applying fixes
 
 ### Audit Logging
 

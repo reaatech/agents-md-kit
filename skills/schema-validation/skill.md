@@ -10,19 +10,18 @@ category: "tool"
 
 ## Capability
 
-Validates AGENTS.md and SKILL.md files against Zod schemas to ensure structural correctness, required sections, and proper frontmatter.
+Validates AGENTS.md and SKILL.md files against Zod schemas to ensure structural correctness, required sections, frontmatter completeness, and content quality.
 
 ## MCP Tools
 
 | Tool | Input Schema | Output | Rate Limit |
 |------|-------------|--------|------------|
-| `validate_agents_md` | `z.object({ path: z.string(), strict: z.boolean().optional() })` | `{ valid: boolean, errors: Error[], warnings: Warning[] }` | 60 RPM |
-| `validate_skill_md` | `z.object({ path: z.string(), strict: z.boolean().optional() })` | `{ valid: boolean, errors: Error[], warnings: Warning[] }` | 60 RPM |
-| `validate_frontmatter` | `z.object({ content: z.string(), type: z.enum(['agents', 'skill']) })` | `{ valid: boolean, fields: Record<string, unknown>, errors: Error[] }` | 60 RPM |
+| `validate_agents_md` | `z.object({ filePath: z.string().optional(), content: z.string().optional(), strict: z.boolean().optional() })` | `{ valid: boolean, errors: Error[], warnings: Warning[] }` | 60 RPM |
+| `validate_skill_md` | `z.object({ filePath: z.string().optional(), content: z.string().optional(), strict: z.boolean().optional() })` | `{ valid: boolean, errors: Error[], warnings: Warning[] }` | 60 RPM |
 
 ## Usage Examples
 
-### Example 1: Validate AGENTS.md file
+### Example 1: Validate an AGENTS.md file
 
 - **User intent:** Validate that an AGENTS.md file conforms to the schema
 - **Tool call:**
@@ -30,7 +29,7 @@ Validates AGENTS.md and SKILL.md files against Zod schemas to ensure structural 
   {
     "name": "validate_agents_md",
     "arguments": {
-      "path": "./agents/my-agent/AGENTS.md",
+      "filePath": "./agents/my-agent/AGENTS.md",
       "strict": true
     }
   }
@@ -51,7 +50,7 @@ Validates AGENTS.md and SKILL.md files against Zod schemas to ensure structural 
   }
   ```
 
-### Example 2: Validate SKILL.md file with errors
+### Example 2: Validate a SKILL.md file with errors
 
 - **User intent:** Validate a skill file that has missing sections
 - **Tool call:**
@@ -59,7 +58,8 @@ Validates AGENTS.md and SKILL.md files against Zod schemas to ensure structural 
   {
     "name": "validate_skill_md",
     "arguments": {
-      "path": "./agents/my-agent/skills/echo/skill.md"
+      "filePath": "./agents/my-agent/skills/echo/skill.md",
+      "strict": true
     }
   }
   ```
@@ -79,6 +79,20 @@ Validates AGENTS.md and SKILL.md files against Zod schemas to ensure structural 
   }
   ```
 
+### Example 3: Validate inline content (no file)
+
+- **User intent:** Validate markdown content passed directly
+- **Tool call:**
+  ```json
+  {
+    "name": "validate_agents_md",
+    "arguments": {
+      "content": "---\nagent_id: test\ndisplay_name: Test\nversion: 1.0.0\ndescription: test\n---\n\n# Test\n\n## What this is\n\n...",
+      "strict": false
+    }
+  }
+  ```
+
 ## Error Handling
 
 ### Known Failure Modes
@@ -92,7 +106,7 @@ Validates AGENTS.md and SKILL.md files against Zod schemas to ensure structural 
 
 ### Recovery Strategies
 
-- **Missing files:** Suggest using `scaffold` command to generate missing files
+- **Missing files:** Suggest using `scaffold_agent` to generate missing files
 - **Parse errors:** Show the problematic YAML snippet with line numbers
 - **Schema violations:** List specific fields that failed validation with suggestions
 - **Cross-reference errors:** List all broken references and suggest fixes

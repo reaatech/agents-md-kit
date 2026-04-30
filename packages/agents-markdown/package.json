@@ -1,0 +1,45 @@
+{
+  "name": "@reaatech/agents-markdown",
+  "version": "1.0.0",
+  "description": "Core types, schemas, and utilities for agents-markdown ecosystem",
+  "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reaatech/agents-md-kit.git",
+    "directory": "packages/agents-markdown"
+  },
+  "homepage": "https://github.com/reaatech/agents-md-kit/tree/main/packages/agents-markdown#readme",
+  "bugs": {
+    "url": "https://github.com/reaatech/agents-md-kit/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "~5.8.3",
+    "vitest": "^3.1.1"
+  }
+}

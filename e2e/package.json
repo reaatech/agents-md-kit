@@ -1,0 +1,20 @@
+{
+  "name": "@reaatech/agents-markdown-e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@reaatech/agents-markdown": "workspace:*",
+    "@reaatech/agents-markdown-linter": "workspace:*",
+    "@reaatech/agents-markdown-parser": "workspace:*",
+    "@reaatech/agents-markdown-scaffold": "workspace:*",
+    "@reaatech/agents-markdown-validator": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^3.1.1"
+  }
+}

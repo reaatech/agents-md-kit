@@ -36,9 +36,23 @@ examples/generated/
 tmp/
 temp/
 
+# Build artifacts
+build/
+*.tsbuildinfo
+
 # Test artifacts
 *.test.js
 *.test.d.ts
+
+# Stray build output in src/ (tsup misconfiguration guard)
+packages/*/src/**/*.js
+packages/*/src/**/*.js.map
+packages/*/src/**/*.d.ts
+packages/*/src/**/*.d.ts.map
+
+# Monorepo
+.turbo/
+.pnpm-store/
 
 # Development files
 DEV_PLAN.md
