@@ -3,11 +3,16 @@
  */
 
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { runLintRules } from '@reaatech/agents-markdown-linter';
 import { parseMarkdown } from '@reaatech/agents-markdown-parser';
 import { validate } from '@reaatech/agents-markdown-validator';
 import { bench, describe, expect, it } from 'vitest';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = resolve(__filename, '..');
+const rootDir = resolve(__dirname, '..');
 
 describe('Performance Tests', () => {
   // Generate a large markdown file for testing
@@ -99,7 +104,7 @@ function example{n}() {{
 
   describe('Batch processing performance', () => {
     it('should process 10+ files efficiently', async () => {
-      const examplesDir = join(process.cwd(), 'examples');
+      const examplesDir = join(rootDir, 'examples');
       const skills = [
         'mcp-server/skills/echo/skill.md',
         'mcp-server/skills/data-query/skill.md',

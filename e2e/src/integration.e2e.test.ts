@@ -3,7 +3,8 @@
  */
 
 import { mkdirSync, readFileSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { ScaffoldConfig } from '@reaatech/agents-markdown';
 import { runLintRules } from '@reaatech/agents-markdown-linter';
 import { parseMarkdown } from '@reaatech/agents-markdown-parser';
@@ -11,7 +12,10 @@ import { generateFiles } from '@reaatech/agents-markdown-scaffold';
 import { validate } from '@reaatech/agents-markdown-validator';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-const testDir = join(process.cwd(), 'tests', 'fixtures', 'integration');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = resolve(__filename, '..');
+const rootDir = resolve(__dirname, '..');
+const testDir = join(rootDir, 'tests', 'fixtures', 'integration');
 
 describe('Integration Tests', () => {
   beforeAll(() => {
@@ -29,7 +33,7 @@ describe('Integration Tests', () => {
   describe('End-to-end linting flow', () => {
     it('should lint a valid AGENTS.md file', async () => {
       const content = readFileSync(
-        join(process.cwd(), 'examples', 'mcp-server', 'AGENTS.md'),
+        join(rootDir, 'examples', 'mcp-server', 'AGENTS.md'),
         'utf-8'
       );
       const document = await parseMarkdown(content, 'AGENTS.md');
@@ -42,7 +46,7 @@ describe('Integration Tests', () => {
 
     it('should lint a valid SKILL.md file', async () => {
       const content = readFileSync(
-        join(process.cwd(), 'examples', 'mcp-server', 'skills', 'echo', 'skill.md'),
+        join(rootDir, 'examples', 'mcp-server', 'skills', 'echo', 'skill.md'),
         'utf-8'
       );
       const document = await parseMarkdown(content, 'skill.md');
@@ -56,7 +60,7 @@ describe('Integration Tests', () => {
   describe('End-to-end validation flow', () => {
     it('should validate a valid AGENTS.md file', async () => {
       const content = readFileSync(
-        join(process.cwd(), 'examples', 'mcp-server', 'AGENTS.md'),
+        join(rootDir, 'examples', 'mcp-server', 'AGENTS.md'),
         'utf-8'
       );
       const document = await parseMarkdown(content, 'AGENTS.md');
@@ -69,7 +73,7 @@ describe('Integration Tests', () => {
 
     it('should validate a valid SKILL.md file', async () => {
       const content = readFileSync(
-        join(process.cwd(), 'examples', 'mcp-server', 'skills', 'echo', 'skill.md'),
+        join(rootDir, 'examples', 'mcp-server', 'skills', 'echo', 'skill.md'),
         'utf-8'
       );
       const document = await parseMarkdown(content, 'skill.md');
@@ -135,7 +139,7 @@ describe('Integration Tests', () => {
 
   describe('Batch processing', () => {
     it('should process multiple files', async () => {
-      const examplesDir = join(process.cwd(), 'examples', 'gallery');
+      const examplesDir = join(rootDir, 'examples', 'gallery');
       const agentTypes = ['mcp-server', 'orchestrator', 'classifier', 'router', 'evaluator'];
 
       for (const type of agentTypes) {
