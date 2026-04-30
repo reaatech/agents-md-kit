@@ -13,7 +13,7 @@
 │         └───────────────────┼───────────────────┘                         │
 │                             │                                               │
 └─────────────────────────────┼─────────────────────────────────────────────┘
-                              ▼
+                               ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                           Core Engine                                    │
 │  ┌──────────────────────────────────────────────────────────────────┐   │
@@ -26,7 +26,7 @@
 │  │  └─────────────┘    └─────────────┘    └─────────────┘           │   │
 │  └──────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────┘
-                              ▼
+                               ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                          Reporters                                       │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
@@ -34,7 +34,7 @@
 │  │  (Colored)  │  │ (Machine)   │  │  (Dashboard)│  │  (Summary)  │    │
 │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘    │
 └─────────────────────────────────────────────────────────────────────────┘
-                              ▼
+                               ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                      Cross-Cutting Concerns                              │
 │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐       │
@@ -44,6 +44,49 @@
 │  │                  │  │  - Logging (pino)│  │                  │       │
 │  └──────────────────┘  └──────────────────┘  └──────────────────┘       │
 └─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Monorepo Structure
+
+The codebase is organized as a pnpm workspace monorepo with 9 independently versioned packages under `packages/`, plus examples and e2e tests.
+
+```
+packages/
+├── agents-markdown/        @reaatech/agents-markdown              (core types + utils)
+├── parser/                 @reaatech/agents-markdown-parser      (markdown AST)
+├── validator/              @reaatech/agents-markdown-validator   (schema validation)
+├── linter/                 @reaatech/agents-markdown-linter      (linting rules)
+├── scaffold/               @reaatech/agents-markdown-scaffold    (file generation)
+├── reporter/               @reaatech/agents-markdown-reporter    (output formatting)
+├── observability/          @reaatech/agents-markdown-observability (logging/metrics)
+├── cli/                    @reaatech/agents-markdown-cli         (CLI tool)
+└── mcp-server/             @reaatech/agents-markdown-mcp-server  (MCP protocol)
+
+examples/                   (5 private workspace packages)
+e2e/                        (private workspace package)
+```
+
+### Package Dependency Graph
+
+```
+agents-markdown ────────────────────────────────────────┐
+  │                                                      │
+  ├──► parser ──┐                                       │
+  │              │                                       │
+  ├──► validator ──► parser                             │
+  │                                                      │
+  ├──► linter ──► parser                                │
+  │                                                      │
+  ├──► scaffold                                         │
+  │                                                      │
+  ├──► reporter                                         │
+  │                                                      │
+observability (leaf)                                     │
+  │                                                      │
+  ├──► cli ──► all packages                             │
+  └──► mcp-server ──► linter, validator, scaffold, reporter
 ```
 
 ---
@@ -71,8 +114,8 @@
 ### 4. Fast Feedback
 - Validation completes in <1s for typical files
 - Parallel processing for batch operations
-- Incremental validation (only changed files)
-- Caching of parse results
+- Turborepo caching for fast incremental builds
+- Co-located tests for rapid feedback loops
 
 ### 5. Extensible Architecture
 - Custom lint rules can be added without modifying core
@@ -84,7 +127,7 @@
 
 ## Component Deep Dive
 
-### Markdown Parser
+### Markdown Parser (`packages/parser`)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -127,7 +170,7 @@
 - Parses tables into structured data
 - Handles code blocks with language identifiers
 
-### Schema Validator
+### Schema Validator (`packages/validator`)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -157,7 +200,7 @@
 3. **Content validation** — Content quality and completeness
 4. **Cross-reference validation** — Skills referenced actually exist
 
-### Linting Rules Engine
+### Linting Rules Engine (`packages/linter`)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -191,23 +234,24 @@
 │                   │   hierarchy │                                    │
 │                   │ - Add       │                                    │
 │                   │   language  │                                    │
-│                   │   identifiers                                    │                                    │
+│                   │   identifiers│                                    │
 │                   └─────────────┘                                    │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
 **Rule Categories:**
-- **Style rules** — Formatting and presentation
-- **Content rules** — Structural and semantic correctness
-- **Best practice rules** — Industry-standard patterns
+- **Style rules** — Formatting and presentation (6 rules)
+- **Content rules** — Structural and semantic correctness (7 rules)
+- **Best practice rules** — Industry-standard patterns (5 rules)
 
 **Auto-Fix Capabilities:**
 - Trailing whitespace removal
 - Heading hierarchy correction
 - Code block language addition
 - Table formatting standardization
+- Missing heading insertion
 
-### Scaffold Generator
+### Scaffold Generator (`packages/scaffold`)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -217,8 +261,8 @@
 │  │  Template   │    │  Variable   │    │    File     │              │
 │  │  Loader     │    │  Resolver   │    │  Generator  │              │
 │  │             │    │             │    │             │              │
-│  │ - Load      │    │ - Prompt    │    │ - Create    │              │
-│  │   Handlebars│    │   for inputs│    │   directory │              │
+│  │ - Load      │    │ - Substitute│    │ - Create    │              │
+│  │   .hbs      │    │   variables │    │   directory │              │
 │  │   templates │    │ - Apply     │    │   structure │              │
 │  │             │    │   defaults  │    │ - Write     │              │
 │  │ - Parse     │    │ - Validate  │    │   files     │              │
@@ -235,8 +279,6 @@
 │                   │ - AGENTS.md │                                    │
 │                   │ - skills/   │                                    │
 │                   │   *.md      │                                    │
-│                   │ - Config    │                                    │
-│                   │   files     │                                    │
 │                   └─────────────┘                                    │
 └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -248,7 +290,7 @@
 - **Router** — LLM router agent template
 - **Evaluator** — Evaluation harness agent template
 
-### Reporter System
+### Reporter System (`packages/reporter`)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -323,30 +365,50 @@
 ### Scaffold Flow
 
 ```
-1. User selects agent type (mcp-server, orchestrator, etc.)
+1. User provides ScaffoldConfig (agent type, ID, skills, output dir)
         │
-2. Prompt for configuration:
-   - agent_id, display_name
-   - Skill types to include
-   - Output directory
+2. Load templates:
+   - AGENTS.md template from templates/agents-md.hbs
+   - SKILL.md template from templates/skill-md.hbs
         │
-3. Load templates:
-   - AGENTS.md template
-   - SKILL.md templates for each skill
-        │
-4. Resolve variables:
+3. Resolve variables:
    - Substitute user-provided values
-   - Apply defaults
-   - Validate configuration
+   - Apply defaults (version, description)
         │
-5. Generate files:
+4. Generate files:
    - Create directory structure
    - Write AGENTS.md
-   - Write skills/*.md files
-   - Handle conflicts (don't overwrite)
+   - Write skills/{id}/skill.md for each skill
+   - Handle conflicts (skip if exists, unless overwrite)
         │
-6. Report generated files
+5. Return GenerateResult { created, skipped, errors }
 ```
+
+---
+
+## Build System
+
+### Per-Package Build (tsup)
+
+Each package builds independently with `tsup`, producing dual CJS/ESM output plus type declarations:
+
+```
+dist/
+├── index.js       # ESM entry
+├── index.cjs      # CJS entry
+├── index.d.ts     # TypeScript declarations
+└── index.d.ts.map # Declaration map
+```
+
+### Workspace Orchestration (Turborepo)
+
+```bash
+pnpm build   # turbo run build — builds all packages in dependency order
+pnpm test    # turbo run test — runs all tests (depends on build)
+pnpm typecheck   # tsc --noEmit -p tsconfig.typecheck.json — cross-package type check
+```
+
+The `tsconfig.typecheck.json` uses path aliases for cross-package imports, enabling type-checking without requiring a full build.
 
 ---
 
@@ -380,7 +442,7 @@
 
 ### Secret Detection
 
-The linter includes a `potential-secret` rule that detects:
+The linter includes a `mightContainSecret` check in the parser that detects:
 - API key patterns (e.g., `sk-`, `api_key=`, `AKIA`)
 - Private keys (e.g., `-----BEGIN RSA PRIVATE KEY-----`)
 - Tokens (e.g., `ghp_`, `xoxb-`, `Bearer`)
@@ -418,7 +480,8 @@ Every operation generates OpenTelemetry spans:
 | `agents_md_kit.operations.duration_ms` | Histogram | `operation` | Operation latency |
 | `agents_md_kit.validation.errors` | Counter | `file_type` | Validation errors |
 | `agents_md_kit.linting.warnings` | Counter | `rule` | Lint warnings by rule |
-| `agents_md_kit.scaffold.files_generated` | Counter | `agent_type` | Files generated |
+| `agents_md_kit.files.processed` | Counter | — | Files processed |
+| `agents_md_kit.scaffold.generations` | Counter | `agent_type` | Scaffold operations |
 
 ### Logging
 
@@ -456,30 +519,26 @@ All operations are logged with structured JSON:
 
 ---
 
-## Deployment Architecture
+## Release Process
 
-### GCP Cloud Run
+The project uses [Changesets](https://github.com/changesets/changesets) for versioning and publishing:
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Cloud Run Service                            │
-│  ┌─────────────────────────────────────────────────────────────┐    │
-│  │                   agents-md-kit Container                     │    │
-│  │  ┌───────────┐  ┌───────────┐  ┌───────────┐                │    │
-│  │  │ CLI/      │  │ OTel      │  │ Examples  │                │    │
-│  │  │ Library   │  │ Sidecar   │  │ Gallery   │                │    │
-│  │  └───────────┘  └───────────┘  └───────────┘                │    │
-│  └─────────────────────────────────────────────────────────────┘    │
-│                                                                      │
-│  Config:                                                             │
-│  - Min instances: 0 (scale to zero)                                 │
-│  - Max instances: 5 (configurable)                                  │
-│  - Memory: 512MB, CPU: 1 vCPU                                       │
-│  - Timeout: 60s                                                     │
-│                                                                      │
-│  Observability: OTel → Cloud Monitoring / Datadog                    │
-│  Storage: GCS for examples gallery                                  │
-└─────────────────────────────────────────────────────────────────────┘
+Developer adds changeset  →  PR merges to main  →  "Version Packages" PR opens automatically
+       ↓                                               ↓
+  pnpm changeset                              Review version bumps + CHANGELOGs
+                                                    ↓
+                                            Merge PR → packages publish to npm
+                                                    ↓
+                                            Auto-mirror to GitHub Packages
+```
+
+### Release Commands
+
+```bash
+pnpm changeset          # Interactive: pick packages, bump type, write summary
+pnpm version-packages   # Apply pending changesets (CI runs this)
+pnpm release            # Build + publish (CI runs this)
 ```
 
 ---
@@ -489,7 +548,7 @@ All operations are logged with structured JSON:
 - **AGENTS.md** — Agent development guide
 - **DEV_PLAN.md** — Development checklist
 - **README.md** — Quick start and overview
-- **examples/gallery/** — Curated example files
+- **examples/** — Curated example AGENTS.md and SKILL.md files
 - **docs/SCHEMA_REFERENCE.md** — Complete schema documentation
 - **docs/LINT_RULES.md** — Lint rules reference
 - **MCP Specification** — https://modelcontextprotocol.io/

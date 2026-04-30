@@ -10,16 +10,13 @@ category: "tool"
 
 ## Capability
 
-Generates AGENTS.md and SKILL.md files from templates, creating a complete directory structure with placeholder content and instructions for AI agents.
+Generates AGENTS.md and SKILL.md files from Handlebars templates, creating a complete directory structure with proper frontmatter, required sections, and skill definitions for all agent types.
 
 ## MCP Tools
 
 | Tool | Input Schema | Output | Rate Limit |
 |------|-------------|--------|------------|
-| `scaffold_agent` | `z.object({ type: z.enum(['mcp-server', 'orchestrator', 'classifier', 'router', 'evaluator']), agent_id: z.string(), display_name: z.string(), output_dir: z.string(), skills: z.array(z.string()).optional() })` | `{ created: string[], skipped: string[], warnings: string[] }` | 30 RPM |
-| `scaffold_skill` | `z.object({ skill_id: z.string(), display_name: z.string(), category: z.enum(['tool', 'orchestration', 'evaluation', 'routing']), output_dir: z.string() })` | `{ created: string[], warnings: string[] }` | 30 RPM |
-| `preview_scaffold` | `z.object({ type: z.enum(['mcp-server', 'orchestrator', 'classifier', 'router', 'evaluator']), agent_id: z.string(), skills: z.array(z.string()).optional() })` | `{ files: { path: string, content: string }[] }` | 60 RPM |
-| `list_templates` | `z.object({})` | `{ templates: { type: string, description: string, skills: string[] }[] }` | 60 RPM |
+| `scaffold_agent` | `z.object({ agentId: z.string(), displayName: z.string(), agentType: z.enum(['mcp','orchestrator','classifier','router','evaluator']), outputDir: z.string(), description: z.string().optional(), version: z.string().optional(), overwrite: z.boolean().optional(), skills: z.array(z.object({ skillId: z.string(), displayName: z.string(), skillType: z.enum(['tool','orchestration','evaluation','routing']), description: z.string().optional() })).optional() })` | `{ created: string[], skipped: string[], errors: string[] }` | 30 RPM |
 
 ## Usage Examples
 
@@ -31,11 +28,15 @@ Generates AGENTS.md and SKILL.md files from templates, creating a complete direc
   {
     "name": "scaffold_agent",
     "arguments": {
-      "type": "mcp-server",
-      "agent_id": "my-data-agent",
-      "display_name": "My Data Agent",
-      "output_dir": "./agents/my-data-agent",
-      "skills": ["data-query", "data-validation"]
+      "agentId": "my-data-agent",
+      "displayName": "My Data Agent",
+      "agentType": "mcp",
+      "outputDir": "./agents/my-data-agent",
+      "description": "A data processing MCP server agent",
+      "skills": [
+        { "skillId": "data-query", "displayName": "Data Query", "skillType": "tool" },
+        { "skillId": "data-validation", "displayName": "Data Validation", "skillType": "tool" }
+      ]
     }
   }
   ```
@@ -48,45 +49,60 @@ Generates AGENTS.md and SKILL.md files from templates, creating a complete direc
       "./agents/my-data-agent/skills/data-validation/skill.md"
     ],
     "skipped": [],
-    "warnings": [
-      "Remember to update the MCP endpoint in AGENTS.md before deployment"
-    ]
+    "errors": []
   }
   ```
 
-### Example 2: Preview scaffold before generating
+### Example 2: Scaffold an orchestrator with dry-run
 
-- **User intent:** See what files would be created without actually creating them
-- **Tool call:**
-  ```json
-  {
-    "name": "preview_scaffold",
-    "arguments": {
-      "type": "orchestrator",
-      "agent_id": "my-orchestrator",
-      "skills": ["routing", "circuit-breaker"]
-    }
-  }
+- **User intent:** Preview what would be generated without writing files
+- **Use the CLI:**
+  ```bash
+  agents-md-kit scaffold \
+    --agent-id my-orchestrator \
+    --display-name "My Orchestrator" \
+    --agent-type orchestrator \
+    --output-dir ./agents/my-orchestrator \
+    --skills routing,circuit-breaker \
+    --dry-run
   ```
-- **Expected response:**
-  ```json
-  {
-    "files": [
-      {
-        "path": "AGENTS.md",
-        "content": "# My Orchestrator\n\n## What this is\n\nThis document defines the agent interaction model..."
-      },
-      {
-        "path": "skills/routing/skill.md",
-        "content": "# Routing\n\n## Capability\n\nRoutes user intents to appropriate agents..."
-      },
-      {
-        "path": "skills/circuit-breaker/skill.md",
-        "content": "# Circuit Breaker\n\n## Capability\n\nImplements resilience patterns for agent failures..."
-      }
-    ]
-  }
-  ```
+- **Expected output:**
+
+  Lists files that would be created with whether they already exist. No files written.
+
+### Example 3: Scaffold with library API
+
+```typescript
+import { generateFiles, previewGeneration } from "@reaatech/agents-markdown-scaffold";
+
+const config = {
+  agentType: "mcp",
+  agentId: "my-agent",
+  displayName: "My Agent",
+  outputDir: "./my-agent",
+  overwrite: false,
+  skills: [
+    { skillId: "echo", displayName: "Echo", skillType: "tool" },
+  ],
+};
+
+// Dry-run preview
+const preview = previewGeneration(config);
+
+// Generate files
+const result = generateFiles(config);
+console.log(result.created, result.skipped, result.errors);
+```
+
+## Generated Structure
+
+```
+outputDir/
+├── AGENTS.md           # Full template with all required sections
+└── skills/
+    └── {skill-id}/
+        └── skill.md    # Full template with all required sections
+```
 
 ## Error Handling
 
@@ -94,17 +110,17 @@ Generates AGENTS.md and SKILL.md files from templates, creating a complete direc
 
 | Failure | Cause | Recovery |
 |---------|-------|----------|
-| Directory exists | Output directory already has files | Skip existing files, report warnings |
-| Invalid agent_id | Contains invalid characters | Return error with valid format suggestion |
+| Directory exists | Output directory already has files | Skip existing files, report in skipped |
+| Invalid agentId | Contains invalid characters | Return error with valid format suggestion |
 | Permission denied | No write access to directory | Return error suggesting permission fix |
-| Invalid template | Template type not found | Return error with available template list |
+| Invalid agentType | Not a recognized agent type | Return error with valid type list |
 
 ### Recovery Strategies
 
-- **Existing files:** Skip files that already exist, report in warnings
+- **Existing files:** Skip files that already exist (or overwrite if configured)
 - **Invalid IDs:** Suggest using lowercase alphanumeric with hyphens only
 - **Permission issues:** Suggest running with appropriate permissions
-- **Template errors:** Fall back to default template with warning
+- **Unknown types:** Return list of valid agent types
 
 ## Security Considerations
 
@@ -118,10 +134,10 @@ Generates AGENTS.md and SKILL.md files from templates, creating a complete direc
 
 - Write access required for output directory
 - Create parent directories if they don't exist
-- Never overwrite existing files without explicit consent
+- Never overwrite existing files without explicit consent (overwrite: true)
 
 ### Audit Logging
 
-- Log all scaffold operations with agent_id and output path
+- Log all scaffold operations with agentId and output path
 - Include request_id for tracing
 - Track files created and skipped

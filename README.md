@@ -1,214 +1,115 @@
 # agents-md-kit
 
-Linter, validator, and scaffolding tool for AGENTS.md and SKILL.md files — the "durable agent instruction artifacts" that define how AI agents behave, what skills they possess, and how they integrate into multi-agent systems.
+[![CI](https://github.com/reaatech/agents-md-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/reaatech/agents-md-kit/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue)](https://www.typescriptlang.org/)
 
-## Quick Start
+> Linter, validator, and scaffolding tool for **AGENTS.md** and **SKILL.md** files — the "durable agent instruction artifacts" that define how AI agents behave, what skills they possess, and how they integrate into multi-agent systems.
 
-```bash
-# Install
-npm install -g agents-md-kit
+This monorepo provides a complete toolkit for creating, validating, and maintaining agent instruction files that follow [community best practices](https://github.com/reaatech/agents-md-kit). Each package is independently versioned and published under the `@reaatech/agents-markdown-*` scope.
 
-# Lint a file
-agents-md-kit lint ./AGENTS.md
+## Features
 
-# Validate against schema
-agents-md-kit validate ./AGENTS.md
-
-# Scaffold a new agent
-agents-md-kit scaffold --agent-id my-agent --display-name "My Agent" --output-dir ./my-agent/
-```
-
-## What This Is
-
-agents-md-kit helps engineers create, validate, and maintain agent instruction files that follow best practices and community standards. It provides:
-
-- **Schema Validation** — Zod-based validation for AGENTS.md and SKILL.md structure
-- **Linting** — Style, content, and best-practice rules with auto-fix capabilities
-- **Scaffolding** — Template-based generation of new agent and skill files
-- **MCP Integration** — Expose validation tools via MCP protocol
+- **Schema Validation** — Zod-based validation for AGENTS.md and SKILL.md structure, with frontmatter, required sections, and content quality checks
+- **Linting** — 18 built-in rules across style, content, and best-practice categories, with auto-fix for formatting issues
+- **Scaffolding** — Template-based generation of complete agent directories with proper YAML frontmatter and required sections
+- **Multi-format reporting** — Console, JSON, HTML, and Markdown output for CI/CD pipelines, build artifacts, and PR comments
+- **MCP integration** — Five MCP tools exposed via Stdio and StreamableHTTP transports for AI agent integration
+- **Observability** — Structured logging via Pino with OpenTelemetry tracing and metrics
 
 ## Installation
 
-```bash
-# Global install
-npm install -g agents-md-kit
-
-# Or use with npx
-npx agents-md-kit lint ./AGENTS.md
-```
-
-## CLI Commands
-
-### Lint
+### Using the Packages
 
 ```bash
-# Lint a single file
-agents-md-kit lint ./AGENTS.md
-
-# Lint a directory
-agents-md-kit lint ./agents/
-
-# Output as JSON
-agents-md-kit lint ./AGENTS.md --format json
-
-# Fail only on errors
-agents-md-kit lint ./AGENTS.md --fail-on error
+# Core types, schemas, and utilities
+pnpm add @reaatech/agents-markdown
+# Markdown AST parser with YAML frontmatter extraction
+pnpm add @reaatech/agents-markdown-parser
+# Schema validation engine
+pnpm add @reaatech/agents-markdown-validator
+# Linting rules engine with 18 built-in rules
+pnpm add @reaatech/agents-markdown-linter
+# Template-based file generator
+pnpm add @reaatech/agents-markdown-scaffold
+# Console, JSON, HTML, and Markdown reporters
+pnpm add @reaatech/agents-markdown-reporter
+# Structured logging and OTel metrics
+pnpm add @reaatech/agents-markdown-observability
+# CLI tool (global install recommended)
+pnpm add -g @reaatech/agents-markdown-cli
+# MCP server for AI agent integration
+pnpm add @reaatech/agents-markdown-mcp-server
 ```
 
-### Validate
+### Contributing
 
 ```bash
-# Validate AGENTS.md
-agents-md-kit validate ./AGENTS.md
-
-# Validate SKILL.md
-agents-md-kit validate ./skills/echo/skill.md
-
-# Strict mode (fail on warnings)
-agents-md-kit validate ./AGENTS.md --strict
+git clone https://github.com/reaatech/agents-md-kit.git
+cd agents-md-kit
+pnpm install
+pnpm build
+pnpm test
+pnpm typecheck
+pnpm lint
 ```
 
-### Scaffold
-
-```bash
-# Create a new MCP agent
-agents-md-kit scaffold \
-  --agent-id my-mcp-agent \
-  --display-name "My MCP Agent" \
-  --agent-type mcp \
-  --output-dir ./my-mcp-agent/
-
-# Create an orchestrator with skills
-agents-md-kit scaffold \
-  --agent-id my-orchestrator \
-  --display-name "My Orchestrator" \
-  --agent-type orchestrator \
-  --skills routing,circuit-breaker \
-  --output-dir ./my-orchestrator/
-```
-
-## Schema Reference
-
-### AGENTS.md Required Sections
-
-| Section | Description |
-|---------|-------------|
-| `# {Agent Name}` | Title with agent name |
-| `## What this is` | One-paragraph description |
-| `## Architecture Overview` | ASCII diagram + component table |
-| `## Skill System` | Skills table with references |
-| `## MCP Integration` | MCP tools and protocol details |
-| `## Security Considerations` | PII handling, auth, input validation |
-| `## Observability` | Logging, tracing, metrics |
-| `## Checklist: Production Readiness` | Pre-deployment checklist |
-
-### SKILL.md Required Sections
-
-| Section | Description |
-|---------|-------------|
-| `# {Skill Name}` | Title with skill name |
-| `## Capability` | One-sentence description |
-| `## MCP Tools` | Table of tools with schemas |
-| `## Usage Examples` | At least 2 examples (success + error) |
-| `## Error Handling` | Known failures and recovery |
-| `## Security Considerations` | PII, permissions, audit |
-
-## Linting Rules
-
-| Rule ID | Severity | Description | Auto-fix |
-|---------|----------|-------------|----------|
-| `heading-missing` | error | Required section heading not found | No |
-| `heading-order` | warning | Heading levels skipped | Yes |
-| `empty-section` | warning | Section has no content | No |
-| `no-code-language` | warning | Code block missing language | Yes |
-| `trailing-whitespace` | info | Trailing whitespace | Yes |
-| `missing-pii-mention` | warning | No PII handling in security | No |
-| `broken-skill-reference` | error | References non-existent skill | No |
-
-## MCP Integration
-
-agents-md-kit exposes MCP tools for agent integration:
-
-```json
-{
-  "name": "validate_agents_md",
-  "arguments": {
-    "filePath": "./AGENTS.md",
-    "strict": true
-  }
-}
-```
-
-Available tools:
-- `lint_agents_md` — Lint AGENTS.md or SKILL.md files
-- `validate_agents_md` — Validate against schema
-- `validate_skill_md` — Backward-compatible alias for schema validation
-- `scaffold_agent` — Generate new agent files
-- `get_examples` — List available examples
-
-## CI/CD Integration
-
-```yaml
-# .github/workflows/agents-md-lint.yml
-name: Agents.md Lint
-
-on:
-  pull_request:
-    paths:
-      - '**/AGENTS.md'
-      - '**/skills/**/*.md'
-
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Lint agent files
-        run: npx agents-md-kit lint ./agents/ --format json --output lint-results.json
-```
-
-## Library Usage
+## Quick Start
 
 ```typescript
-import { lintFile, validateFile, generateFiles } from 'agents-md-kit';
+import { parseMarkdown } from "@reaatech/agents-markdown-parser";
+import { runLintRules } from "@reaatech/agents-markdown-linter";
+import { validate } from "@reaatech/agents-markdown-validator";
+import { generateFiles } from "@reaatech/agents-markdown-scaffold";
+import { reportLintResult } from "@reaatech/agents-markdown-reporter";
 
-// Lint a file
-const lintResult = await lintFile('./AGENTS.md');
-console.log(lintResult.errorCount, lintResult.warningCount);
+// Parse an AGENTS.md file
+const doc = await parseMarkdown(content, "./AGENTS.md");
 
-// Validate against schema
-const validationResult = await validateFile('./AGENTS.md', true);
+// Lint it
+const lintResult = runLintRules(doc);
+console.log(reportLintResult(lintResult));
+
+// Validate it
+const validationResult = validate(doc, { strict: true });
 if (!validationResult.valid) {
   console.error(validationResult.errors);
 }
 
-// Scaffold new agent
-generateFiles({
-  agentId: 'my-agent',
-  displayName: 'My Agent',
-  agentType: 'mcp',
-  outputDir: './my-agent/',
-  skills: [{ skillId: 'echo', displayName: 'Echo', skillType: 'tool' }],
+// Scaffold a new agent
+const scaffoldResult = generateFiles({
+  agentType: "mcp",
+  agentId: "my-agent",
+  displayName: "My Agent",
+  outputDir: "./my-agent",
+  skills: [{ skillId: "echo", displayName: "Echo", skillType: "tool" }],
 });
 ```
 
-## Examples
+See the [`examples/`](./examples/) directory for complete AGENTS.md and SKILL.md files for each agent type.
 
-See [examples/gallery/](./examples/gallery/) for complete examples:
+## Packages
 
-- **MCP Server** — Basic MCP server agent
-- **Orchestrator** — Multi-agent orchestrator
-- **Classifier** — Intent classifier agent
-- **Router** — LLM router agent
-- **Evaluator** — Evaluation harness agent
+| Package | Description |
+|---------|-------------|
+| [`@reaatech/agents-markdown`](./packages/agents-markdown) | Core domain types, Zod schemas, and shared utilities |
+| [`@reaatech/agents-markdown-parser`](./packages/parser) | Markdown AST parser with YAML frontmatter extraction |
+| [`@reaatech/agents-markdown-validator`](./packages/validator) | Schema validation engine for AGENTS.md and SKILL.md |
+| [`@reaatech/agents-markdown-linter`](./packages/linter) | Style, content, and best-practice linting rules |
+| [`@reaatech/agents-markdown-scaffold`](./packages/scaffold) | Template-based file generator |
+| [`@reaatech/agents-markdown-reporter`](./packages/reporter) | Console, JSON, HTML, and Markdown output reporters |
+| [`@reaatech/agents-markdown-observability`](./packages/observability) | Structured logging and OpenTelemetry metrics |
+| [`@reaatech/agents-markdown-cli`](./packages/cli) | Command-line interface (`agents-md-kit`) |
+| [`@reaatech/agents-markdown-mcp-server`](./packages/mcp-server) | MCP server exposing tools via Model Context Protocol |
 
-## Contributing
+## Documentation
 
-1. Fork the repository
-2. Create a feature branch
-3. Run tests: `npm test`
-4. Submit a pull request
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md) — System design deep dive with data flow and component diagrams
+- [`AGENTS.md`](./AGENTS.md) — Self-describing AGENTS.md for this project
+- [`CONTRIBUTING.md`](./CONTRIBUTING.md) — Development setup and contribution guidelines
+- [`docs/SCHEMA_REFERENCE.md`](./docs/SCHEMA_REFERENCE.md) — Complete AGENTS.md and SKILL.md schema documentation
+- [`docs/LINT_RULES.md`](./docs/LINT_RULES.md) — Lint rules reference with examples
 
 ## License
 
-MIT
+[MIT](LICENSE)

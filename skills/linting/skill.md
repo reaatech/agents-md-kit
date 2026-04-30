@@ -10,16 +10,13 @@ category: "tool"
 
 ## Capability
 
-Applies style, content, and best-practice linting rules to AGENTS.md and SKILL.md files to ensure quality, consistency, and adherence to community standards.
+Applies style, content, and best-practice linting rules to AGENTS.md and SKILL.md files to ensure quality, consistency, and adherence to community standards. Ships with 18 built-in rules across three categories, plus an extensible rule registry and auto-fix engine.
 
 ## MCP Tools
 
 | Tool | Input Schema | Output | Rate Limit |
 |------|-------------|--------|------------|
-| `lint_file` | `z.object({ path: z.string(), rules: z.array(z.string()).optional(), severity: z.enum(['error', 'warning', 'info']).optional() })` | `{ errors: number, warnings: number, info: number, results: LintResult[] }` | 60 RPM |
-| `lint_directory` | `z.object({ path: z.string(), recursive: z.boolean().optional(), rules: z.array(z.string()).optional() })` | `{ files: { path: string, errors: number, warnings: number, results: LintResult[] }[] }` | 30 RPM |
-| `auto_fix` | `z.object({ path: z.string(), rules: z.array(z.string()).optional(), dry_run: z.boolean().optional() })` | `{ fixed: number, skipped: number, changes: Change[] }` | 30 RPM |
-| `list_rules` | `z.object({ category: z.enum(['style', 'content', 'best-practice']).optional() })` | `{ rules: { id: string, description: string, severity: string, auto_fix: boolean }[] }` | 60 RPM |
+| `lint_agents_md` | `z.object({ filePath: z.string().optional(), content: z.string().optional(), severity: z.enum(['error','warning','info','suggestion']).optional() })` | `{ path: string, findings: Finding[], errorCount: number, warningCount: number, infoCount: number, fixableCount: number }` | 60 RPM |
 
 ## Usage Examples
 
@@ -29,9 +26,9 @@ Applies style, content, and best-practice linting rules to AGENTS.md and SKILL.m
 - **Tool call:**
   ```json
   {
-    "name": "lint_file",
+    "name": "lint_agents_md",
     "arguments": {
-      "path": "./agents/my-agent/AGENTS.md",
+      "filePath": "./agents/my-agent/AGENTS.md",
       "severity": "warning"
     }
   }
@@ -39,78 +36,84 @@ Applies style, content, and best-practice linting rules to AGENTS.md and SKILL.m
 - **Expected response:**
   ```json
   {
-    "errors": 0,
-    "warnings": 3,
-    "info": 2,
-    "results": [
+    "errorCount": 0,
+    "warningCount": 3,
+    "infoCount": 2,
+    "findings": [
       {
-        "rule": "heading-order",
+        "ruleId": "heading-order",
         "severity": "warning",
         "message": "Heading level skipped from h2 to h4",
-        "line": 23,
-        "auto_fix": true
+        "line": 23
       },
       {
-        "rule": "no-code-language",
+        "ruleId": "no-code-language",
         "severity": "warning",
         "message": "Code block missing language identifier",
-        "line": 45,
-        "auto_fix": true
+        "line": 45
       },
       {
-        "rule": "trailing-whitespace",
+        "ruleId": "trailing-whitespace",
         "severity": "info",
         "message": "Trailing whitespace detected",
-        "line": 12,
-        "auto_fix": true
+        "line": 12
       }
     ]
   }
   ```
 
-### Example 2: Auto-fix formatting issues
+### Example 2: Lint with auto-fix via CLI
 
 - **User intent:** Automatically fix all fixable linting issues
 - **Tool call:**
   ```json
   {
-    "name": "auto_fix",
+    "name": "lint_agents_md",
     "arguments": {
-      "path": "./agents/my-agent/AGENTS.md",
-      "dry_run": true
+      "filePath": "./agents/my-agent/AGENTS.md",
+      "severity": "suggestion"
     }
   }
   ```
 - **Expected response:**
-  ```json
-  {
-    "fixed": 0,
-    "skipped": 3,
-    "changes": [
-      {
-        "rule": "heading-order",
-        "line": 23,
-        "old": "#### Subsection",
-        "new": "### Subsection",
-        "description": "Changed h4 to h3 to maintain heading hierarchy"
-      },
-      {
-        "rule": "no-code-language",
-        "line": 45,
-        "old": "```",
-        "new": "```json",
-        "description": "Added json language identifier based on content"
-      },
-      {
-        "rule": "trailing-whitespace",
-        "line": 12,
-        "old": "Some text   ",
-        "new": "Some text",
-        "description": "Removed trailing whitespace"
-      }
-    ]
-  }
-  ```
+
+  All 18 rules run. Findings with `autoFixable: true` (trailing-whitespace, no-code-language, table-format, heading-missing) include fix payloads. Apply fixes via the CLI `format --fix` command or the `runAutoFix` library function.
+
+## Lint Rules Reference
+
+### Style Rules
+
+| Rule ID | Severity | Auto-fix | Description |
+|---------|----------|----------|-------------|
+| `heading-order` | warning | No | Heading levels must not be skipped |
+| `no-code-language` | warning | Yes | Code blocks should specify a language |
+| `trailing-whitespace` | info | Yes | Lines must not have trailing whitespace |
+| `line-too-long` | info | No | Lines must not exceed 120 characters |
+| `table-format` | warning | Yes | Table rows must have consistent column counts |
+| `list-format` | warning | No | List markers must be consistent |
+
+### Content Rules
+
+| Rule ID | Severity | Auto-fix | Description |
+|---------|----------|----------|-------------|
+| `heading-missing` | error | Yes | Required section headings must be present |
+| `empty-section` | warning | No | Sections must contain content |
+| `placeholder-text` | warning | No | No TODO/FIXME placeholders |
+| `duplicate-section` | error | No | Section titles must be unique |
+| `broken-skill-ref` | error | No | Referenced skill files must exist |
+| `duplicate-skill-id` | error | No | Skill IDs must be unique |
+| `section-ordering` | warning | No | Sections should follow recommended order |
+| `min-content-length` | warning | No | Sections should have minimum content |
+
+### Best Practice Rules
+
+| Rule ID | Severity | Auto-fix | Description |
+|---------|----------|----------|-------------|
+| `missing-pii-mention` | warning | No | Security section should mention PII |
+| `missing-observability` | warning | No | Observability section should mention structured logging |
+| `incomplete-examples` | warning | No | Usage examples should include error cases |
+| `missing-mcp-schema` | warning | No | MCP tools should document input schemas |
+| `missing-confidence` | error | No | Agent config must include confidence_threshold |
 
 ## Error Handling
 
@@ -121,13 +124,13 @@ Applies style, content, and best-practice linting rules to AGENTS.md and SKILL.m
 | File not found | Path doesn't exist | Return error with suggestion to check path |
 | Permission denied | No read access | Return error suggesting permission fix |
 | Parse error | Invalid markdown | Return error with line number |
-| Too many files | Directory has 1000+ files | Suggest using filters or batch processing |
+| Too many files | Directory has 1000+ files | Suggest using filters or patterns |
 
 ### Recovery Strategies
 
 - **Permission issues:** Suggest running with appropriate permissions
 - **Parse errors:** Show the problematic section with context
-- **Large directories:** Suggest using `--include` patterns to filter files
+- **Large directories:** Suggest using file patterns to scope the lint run
 
 ## Security Considerations
 
@@ -140,8 +143,8 @@ Applies style, content, and best-practice linting rules to AGENTS.md and SKILL.m
 ### Permissions
 
 - Read-only access for linting (no write without explicit consent)
-- Auto-fix requires explicit user confirmation
-- Dry-run mode available for previewing changes
+- Auto-fix via `format --fix` command with explicit user consent
+- Dry-run mode available via `--dry-run` flag
 
 ### Audit Logging
 

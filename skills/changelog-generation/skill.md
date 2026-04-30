@@ -2,7 +2,7 @@
 skill_id: "changelog-generation"
 display_name: "Changelog Generation"
 version: "1.0.0"
-description: "Generate changelogs from git commit history with semver support"
+description: "Generate changelogs via changesets from conventional commits"
 category: "tool"
 ---
 
@@ -10,84 +10,69 @@ category: "tool"
 
 ## Capability
 
-Automatically generates changelogs from git commit history, supporting semantic versioning, conventional commits, and multiple output formats.
+Automatically generates CHANGELOG.md files and version bumps using [Changesets](https://github.com/changesets/changesets) with GitHub integration. Supports semantic versioning, conventional commits, and automated release PRs.
 
 ## MCP Tools
 
 | Tool | Input Schema | Output | Rate Limit |
 |------|-------------|--------|------------|
-| `generate_changelog` | `z.object({ repo_path: z.string(), from_tag: z.string().optional(), to_tag: z.string().optional(), format: z.enum(['markdown', 'json', 'text']).optional() })` | `{ version: string, date: string, entries: ChangelogEntry[], raw: string }` | 30 RPM |
-| `parse_semver_tag` | `z.object({ tag: z.string() })` | `{ major: number, minor: number, patch: number, prerelease: string, metadata: string }` | 60 RPM |
-| `format_changelog` | `z.object({ entries: z.array(z.object({ type: z.string(), scope: z.string().optional(), description: z.string(), author: z.string().optional(), pr: z.string().optional() })), format: z.enum(['markdown', 'json', 'text']) })` | `{ formatted: string, word_count: number }` | 60 RPM |
-| `suggest_next_version` | `z.object({ current_version: z.string(), commits: z.array(z.object({ message: z.string(), type: z.string() })) })` | `{ suggested_version: string, bump_type: 'major' | 'minor' | 'patch', rationale: string }` | 30 RPM |
+| `get_examples` | `z.object({ type: z.string().optional(), show: z.string().optional() })` | `{ content: string }` or `Array<string>` | 60 RPM |
+
+The changelog-generation skill leverages the Changesets workflow rather than raw git parsing. See the release-prep skill for version bump orchestration.
 
 ## Usage Examples
 
-### Example 1: Generate changelog between two tags
+### Example 1: Create a changeset
 
-- **User intent:** Generate a changelog for a release between v1.0.0 and v1.1.0
-- **Tool call:**
-  ```json
-  {
-    "name": "generate_changelog",
-    "arguments": {
-      "repo_path": "/Users/rick/dev/2026-04/agents-md-kit",
-      "from_tag": "v1.0.0",
-      "to_tag": "v1.1.0",
-      "format": "markdown"
-    }
-  }
+- **User intent:** Record a new change for the next release
+- **CLI command:**
+  ```bash
+  pnpm changeset
   ```
-- **Expected response:**
-  ```json
-  {
-    "version": "1.1.0",
-    "date": "2026-04-15",
-    "entries": [
-      {
-        "type": "feat",
-        "scope": "linting",
-        "description": "Add auto-fix for heading-order rule",
-        "author": "jane@example.com",
-        "pr": "#42"
-      },
-      {
-        "type": "fix",
-        "scope": "validator",
-        "description": "Handle circular skill references correctly",
-        "author": "john@example.com",
-        "pr": "#45"
-      }
-    ],
-    "raw": "## [1.1.0] - 2026-04-15\n\n### Features\n\n- **(linting)** Add auto-fix for heading-order rule (#42)\n\n### Bug Fixes\n\n- **(validator)** Handle circular skill references correctly (#45)"
-  }
-  ```
+- **Expected flow:**
 
-### Example 2: Suggest next version from commits
+  Interactive prompt to select packages, bump type (major/minor/patch), and write a summary. Creates a `.changeset/*.md` file tracking the change.
 
-- **User intent:** Determine what version to bump to based on recent commits
-- **Tool call:**
-  ```json
-  {
-    "name": "suggest_next_version",
-    "arguments": {
-      "current_version": "1.0.0",
-      "commits": [
-        { "message": "feat: add new validation rule", "type": "feat" },
-        { "message": "fix: correct heading detection", "type": "fix" },
-        { "message": "docs: update examples", "type": "docs" }
-      ]
-    }
-  }
+### Example 2: View pending changesets
+
+- **User intent:** See what pending changes will be included in the next release
+- **CLI command:**
+  ```bash
+  pnpm changeset status
   ```
-- **Expected response:**
-  ```json
-  {
-    "suggested_version": "1.1.0",
-    "bump_type": "minor",
-    "rationale": "Found 1 feature commit (feat), 1 fix commit (fix), and 1 docs commit (docs). Highest priority is 'feat' which triggers a minor version bump."
-  }
-  ```
+- **Expected output:**
+
+  Lists all pending `.changeset/*.md` files and their summaries.
+
+### Example 3: Generate changelogs (CI)
+
+When a PR with changesets merges to `main`, the release workflow automatically:
+
+1. Opens a "Version Packages" PR with:
+   - Bumped version numbers in all affected `package.json` files
+   - Generated `CHANGELOG.md` entries with GitHub PR/contributor links
+2. When that PR is merged, packages are published to npm
+
+```yaml
+# .github/workflows/release.yml
+- name: Create release PR or publish to npm
+  uses: changesets/action@v1
+  with:
+    publish: pnpm release
+    version: pnpm version-packages
+```
+
+## Workflow
+
+```
+Developer creates changeset  →  PR merges to main
+                                      ↓
+                              "Version Packages" PR auto-opens
+                                      ↓
+                              Review version bumps + CHANGELOGs
+                                      ↓
+                              Merge PR → publish to npm
+```
 
 ## Error Handling
 
@@ -95,34 +80,33 @@ Automatically generates changelogs from git commit history, supporting semantic 
 
 | Failure | Cause | Recovery |
 |---------|-------|----------|
-| Git repo not found | Invalid repo_path | Return error suggesting to check path |
-| Tag not found | from_tag or to_tag doesn't exist | List available tags as suggestions |
-| No commits in range | Tags exist but no commits between them | Return empty changelog with warning |
-| Invalid semver tag | Tag doesn't follow vX.Y.Z format | Attempt fuzzy parsing or return error |
-| Malformed commit messages | Commits don't follow conventional format | Parse as "other" type with full message |
+| No changesets found | Nothing to release | No-op, workflow succeeds |
+| Version conflict | Multiple PRs changing same packages | Resolve in Version Packages PR |
+| Changelog merge conflict | Parallel release PRs | Resolve manually, re-generate |
+| npm publish failure | Token/network issue | Re-run workflow after fixing |
 
 ### Recovery Strategies
 
-- **Missing tags:** Use `git log --oneline` to suggest nearby tags
-- **Invalid semver:** Try common patterns like `release-X.Y.Z`, `vX.Y.Z`, `X.Y.Z`
-- **Non-conventional commits:** Categorize as "other" and include full message
+- **No changesets:** Nothing to do — this is normal between releases
+- **Version conflicts:** Changesets deduplicates; merge the Version Packages PR
+- **Publish failures:** Re-trigger the workflow via `workflow_dispatch`
 
 ## Security Considerations
 
 ### PII Handling
 
-- Never include author email addresses in logs or traces — use author name only
-- Redact any sensitive information that might appear in commit messages
-- Don't expose internal repository paths in error messages
+- Never include author email addresses in changelogs (GitHub handles attribution)
+- Don't expose internal repository paths
+- Changelogs only contain public-facing summaries
 
 ### Permissions
 
-- Read-only access to git repository
-- No write access required (changelog is generated, not committed)
-- Access to remote repository only needed for fetching tags
+- Write access required for creating changeset files and version bumps
+- npm token with publish access required for release
+- GitHub Actions `contents: write` and `pull-requests: write` required
 
 ### Audit Logging
 
-- Log changelog generation operations with repo path and tag range
-- Include request_id for tracing
-- Track number of commits processed and entries generated
+- Log all changeset creation and version bump operations
+- Include request_id for tracing across the release workflow
+- Track which packages were bumped and by what type
