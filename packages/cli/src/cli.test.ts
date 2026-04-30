@@ -17,6 +17,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = resolve(__filename, '..');
 const repoRoot = resolve(__dirname, '..', '..', '..');
 
+const originalExamplesEnv = process.env.AGENTS_MD_KIT_EXAMPLES;
+process.env.AGENTS_MD_KIT_EXAMPLES = path.join(repoRoot, 'examples');
+
 const tempDirs: string[] = [];
 
 afterEach(async () => {
@@ -82,7 +85,6 @@ describe('CLI commands', () => {
   });
 
   it('shows and copies examples', async () => {
-    const examplesDir = path.join(repoRoot, 'examples');
     const showOutput = await runCommand(
       (program) => examplesCommand(program),
       ['examples', '--show', 'mcp-server/AGENTS.md']
@@ -91,9 +93,7 @@ describe('CLI commands', () => {
 
     const dir = createTempDir();
     const originalCwd = process.cwd();
-    const originalExamples = process.env.AGENTS_MD_KIT_EXAMPLES;
     process.chdir(dir);
-    process.env.AGENTS_MD_KIT_EXAMPLES = examplesDir;
     try {
       const copyOutput = await runCommand(
         (program) => examplesCommand(program),
@@ -105,11 +105,6 @@ describe('CLI commands', () => {
       );
     } finally {
       process.chdir(originalCwd);
-      if (originalExamples !== undefined) {
-        process.env.AGENTS_MD_KIT_EXAMPLES = originalExamples;
-      } else {
-        process.env.AGENTS_MD_KIT_EXAMPLES = undefined;
-      }
     }
   });
 });
