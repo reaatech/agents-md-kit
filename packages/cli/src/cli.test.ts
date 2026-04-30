@@ -17,7 +17,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = resolve(__filename, '..');
 const repoRoot = resolve(__dirname, '..', '..', '..');
 
-const originalExamplesEnv = process.env.AGENTS_MD_KIT_EXAMPLES;
 process.env.AGENTS_MD_KIT_EXAMPLES = path.join(repoRoot, 'examples');
 
 const tempDirs: string[] = [];
