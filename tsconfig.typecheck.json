@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@reaatech/agents-markdown": ["./packages/agents-markdown/src/index.ts"],
+      "@reaatech/agents-markdown-parser": ["./packages/parser/src/index.ts"],
+      "@reaatech/agents-markdown-validator": ["./packages/validator/src/index.ts"],
+      "@reaatech/agents-markdown-linter": ["./packages/linter/src/index.ts"],
+      "@reaatech/agents-markdown-scaffold": ["./packages/scaffold/src/index.ts"],
+      "@reaatech/agents-markdown-reporter": ["./packages/reporter/src/index.ts"],
+      "@reaatech/agents-markdown-observability": ["./packages/observability/src/index.ts"],
+      "@reaatech/agents-markdown-cli": ["./packages/cli/src/index.ts"],
+      "@reaatech/agents-markdown-mcp-server": ["./packages/mcp-server/src/index.ts"]
+    }
+  },
+  "include": ["packages/*/src/**/*.ts", "e2e/src/**/*.ts", "examples/*/src/**/*.ts"]
+}
