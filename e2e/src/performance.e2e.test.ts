@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { runLintRules } from '@reaatech/agents-markdown-linter';
 import { validate } from '@reaatech/agents-markdown-validator';
 import { bench, describe, expect, it } from 'vitest';
-import { parseMarkdown } from './markdown-parser.js';
+import { parseMarkdown } from '@reaatech/agents-markdown-parser';
 
 describe('Performance Tests', () => {
   // Generate a large markdown file for testing
