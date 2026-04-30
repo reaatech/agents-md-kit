@@ -6,7 +6,6 @@ on:
       - 'examples/**/*.md'
       - 'skills/**/*.md'
       - 'AGENTS.md'
-      - 'src/**/*.ts'
 
 jobs:
   self-lint:
@@ -14,93 +13,30 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.22.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: 'package-lock.json'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       - name: Lint own AGENTS.md
-        run: node dist/src/cli.js lint AGENTS.md
+        run: pnpm exec agents-md-kit lint AGENTS.md
 
-      - name: Lint example gallery
-        run: node dist/src/cli.js lint examples/gallery/
+      - name: Lint examples
+        run: pnpm exec agents-md-kit lint examples/
 
       - name: Validate own AGENTS.md (strict)
-        run: node dist/src/cli.js validate AGENTS.md
-
-      - name: Validate example gallery (strict)
-        run: node dist/src/cli.js validate examples/gallery/
-
-      - name: Generate HTML report
-        run: node dist/src/cli.js lint examples/gallery/ --format html --output lint-report.html
-
-      - name: Upload lint report
-        uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: lint-report
-          path: lint-report.html
-
-      - name: Comment on PR
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const reportPath = 'lint-report.html';
-
-            let comment = '## Agents.md Lint Results\n\n';
-
-            try {
-              // Run lint and capture output
-              const { execSync } = require('child_process');
-              const output = execSync('node dist/src/cli.js lint examples/gallery/ --format json', { encoding: 'utf8' });
-              const results = JSON.parse(output);
-
-              const errorCount = results.reduce((sum, r) => sum + (r.errorCount || 0), 0);
-              const warningCount = results.reduce((sum, r) => sum + (r.warningCount || 0), 0);
-              const allFindings = results.flatMap(r => (r.findings || []).map(f => ({ ...f, path: r.path })));
-
-              if (errorCount === 0 && warningCount === 0) {
-                comment += '✅ **All checks passed!** No errors or warnings found.\n';
-              } else {
-                comment += `⚠️ **Found ${errorCount} error(s) and ${warningCount} warning(s)**\n\n`;
-
-                if (allFindings.length > 0) {
-                  comment += '<details>\n<summary>Click to see details</summary>\n\n';
-
-                  for (const issue of allFindings.slice(0, 10)) {
-                    const emoji = issue.severity === 'error' ? '🔴' : '🟡';
-                    comment += `${emoji} **${issue.path}:${issue.line}** - ${issue.message}\n`;
-                  }
-
-                  if (allFindings.length > 10) {
-                    comment += `\n... and ${allFindings.length - 10} more issues. See full report.\n`;
-                  }
-
-                  comment += '\n</details>\n';
-                }
-              }
-            } catch (error) {
-              comment += '❌ **Lint failed with an error**\n\n';
-              comment += '```\n' + error.message + '\n```\n';
-            }
-
-            comment += '\n---\n📄 Full HTML report available in artifacts.';
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
+        run: pnpm exec agents-md-kit validate AGENTS.md
