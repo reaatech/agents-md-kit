@@ -5,9 +5,9 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { runLintRules } from '@reaatech/agents-markdown-linter';
+import { parseMarkdown } from '@reaatech/agents-markdown-parser';
 import { validate } from '@reaatech/agents-markdown-validator';
 import { bench, describe, expect, it } from 'vitest';
-import { parseMarkdown } from '@reaatech/agents-markdown-parser';
 
 describe('Performance Tests', () => {
   // Generate a large markdown file for testing
