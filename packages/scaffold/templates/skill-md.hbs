@@ -1,0 +1,174 @@
+---
+skill_id: "{{skillId}}"
+display_name: "{{displayName}}"
+version: "{{version}}"
+description: "{{description}}"
+category: "{{skillType}}"
+---
+
+# {{displayName}}
+
+## Capability
+
+{{description}}
+
+This skill enables the agent to {{skillTypeDescription}}.
+
+## MCP Tools
+
+| Tool | Input Schema | Output | Rate Limit |
+|------|-------------|--------|------------|
+| `execute` | `z.object({ input: z.string() })` | `{ result: string }` | 60 RPM |
+| `validate` | `z.object({ data: z.unknown() })` | `{ valid: boolean; errors: string[] }` | 120 RPM |
+
+### Tool: execute
+
+Processes the given input and returns the result.
+
+**Input Schema:**
+
+```typescript
+z.object({
+  input: z.string().describe('The input to process'),
+  options: z.object({
+    timeout: z.number().optional(),
+  }).optional(),
+})
+```
+
+**Output:**
+
+```typescript
+{
+  result: string;
+  duration_ms: number;
+}
+```
+
+### Tool: validate
+
+Validates input data against expected schema.
+
+**Input Schema:**
+
+```typescript
+z.object({
+  data: z.unknown().describe('Data to validate'),
+  schema: z.string().optional().describe('Schema name to validate against'),
+})
+```
+
+**Output:**
+
+```typescript
+{
+  valid: boolean;
+  errors: string[];
+  suggestions?: string[];
+}
+```
+
+## Usage Examples
+
+### Success Case
+
+```json
+{
+  "name": "execute",
+  "arguments": {
+    "input": "Hello, world!"
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "result": "Processed: Hello, world!",
+  "duration_ms": 12
+}
+```
+
+### Error Case
+
+```json
+{
+  "name": "execute",
+  "arguments": {
+    "input": ""
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "error": "Input cannot be empty",
+  "code": "VALIDATION_ERROR"
+}
+```
+
+## Error Handling
+
+| Error Type | Cause | Recovery |
+|------------|-------|----------|
+| `VALIDATION_ERROR` | Invalid input format | Return descriptive error message |
+| `TIMEOUT_ERROR` | Processing took too long | Retry with exponential backoff |
+| `RATE_LIMIT_ERROR` | Too many requests | Queue and process later |
+| `INTERNAL_ERROR` | Unexpected failure | Log and return generic error |
+
+### Error Response Format
+
+```json
+{
+  "error": "Error message",
+  "code": "ERROR_CODE",
+  "details": {},
+  "suggestions": ["suggestion 1"]
+}
+```
+
+## Security Considerations
+
+### Permissions
+
+- This skill requires read access to input data
+- No write permissions needed for basic operations
+- Admin permissions required for configuration changes
+
+### PII Handling
+
+- **Never** log raw input data that may contain PII
+- Use anonymized identifiers in logs
+- Sanitize outputs before returning
+
+### Audit Logging
+
+All skill invocations are logged with:
+- Timestamp
+- Skill ID
+- Request ID (for tracing)
+- Success/failure status
+- Duration
+
+## Testing
+
+### Unit Tests
+
+```bash
+npm test -- tests/skills/{{skillId}}.test.ts
+```
+
+### Integration Tests
+
+```bash
+npm run test:integration
+```
+
+## References
+
+- [Skill Development Guide](../README.md)
+- [MCP Protocol](https://modelcontextprotocol.io/)
+- [Error Handling Best Practices](../docs/error-handling.md)

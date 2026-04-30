@@ -1,0 +1,51 @@
+{
+  "name": "@reaatech/agents-markdown-parser",
+  "version": "1.0.0",
+  "description": "Markdown AST parser with frontmatter extraction for agents-markdown ecosystem",
+  "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reaatech/agents-md-kit.git",
+    "directory": "packages/parser"
+  },
+  "homepage": "https://github.com/reaatech/agents-md-kit/tree/main/packages/parser#readme",
+  "bugs": {
+    "url": "https://github.com/reaatech/agents-md-kit/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@reaatech/agents-markdown": "workspace:*",
+    "remark": "^15.0.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.4",
+    "yaml": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.0",
+    "tsup": "^8.4.0",
+    "typescript": "~5.8.3",
+    "vitest": "^3.1.1"
+  }
+}

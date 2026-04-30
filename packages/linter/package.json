@@ -1,0 +1,46 @@
+{
+  "name": "@reaatech/agents-markdown-linter",
+  "version": "1.0.0",
+  "description": "Linting rules engine for AGENTS.md and SKILL.md files",
+  "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reaatech/agents-md-kit.git",
+    "directory": "packages/linter"
+  },
+  "homepage": "https://github.com/reaatech/agents-md-kit/tree/main/packages/linter#readme",
+  "bugs": {
+    "url": "https://github.com/reaatech/agents-md-kit/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@reaatech/agents-markdown": "workspace:*",
+    "@reaatech/agents-markdown-parser": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "~5.8.3",
+    "vitest": "^3.1.1"
+  }
+}

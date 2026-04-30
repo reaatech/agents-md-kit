@@ -1,0 +1,50 @@
+{
+  "name": "@reaatech/agents-markdown-observability",
+  "version": "1.0.0",
+  "description": "Structured logging, tracing, and metrics for agents-markdown ecosystem",
+  "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reaatech/agents-md-kit.git",
+    "directory": "packages/observability"
+  },
+  "homepage": "https://github.com/reaatech/agents-md-kit/tree/main/packages/observability#readme",
+  "bugs": {
+    "url": "https://github.com/reaatech/agents-md-kit/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/resources": "^2.7.0",
+    "@opentelemetry/sdk-metrics": "^2.7.0",
+    "@opentelemetry/sdk-node": "^0.53.0",
+    "@opentelemetry/semantic-conventions": "^1.28.0",
+    "pino": "^10.3.1"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "~5.8.3",
+    "vitest": "^3.1.1"
+  }
+}
