@@ -1,7 +1,8 @@
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
 import os from 'node:os';
-import path from 'node:path';
+import path, { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Command } from 'commander';
 import { afterEach, describe, expect, it } from 'vitest';
 import {
@@ -12,6 +13,10 @@ import {
   validateCommand,
 } from './commands/index.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = resolve(__filename, '..');
+const repoRoot = resolve(__dirname, '..', '..', '..');
+
 const tempDirs: string[] = [];
 
 afterEach(async () => {
@@ -21,7 +26,7 @@ afterEach(async () => {
 
 describe('CLI commands', () => {
   it('runs lint with json output', async () => {
-    const examplePath = path.join(process.cwd(), 'examples', 'mcp-server', 'AGENTS.md');
+    const examplePath = path.join(repoRoot, 'examples', 'mcp-server', 'AGENTS.md');
     const output = await runCommand(
       (program) => lintCommand(program),
       ['lint', examplePath, '--format', 'json']
@@ -33,15 +38,7 @@ describe('CLI commands', () => {
   });
 
   it('runs validate with json output', async () => {
-    const examplePath = path.join(
-      process.cwd(),
-      'examples',
-      'gallery',
-      'mcp-server',
-      'skills',
-      'echo',
-      'skill.md'
-    );
+    const examplePath = path.join(repoRoot, 'examples', 'mcp-server', 'skills', 'echo', 'skill.md');
     const output = await runCommand(
       (program) => validateCommand(program),
       ['validate', examplePath, '--format', 'json']
@@ -85,7 +82,7 @@ describe('CLI commands', () => {
   });
 
   it('shows and copies examples', async () => {
-    const examplesDir = path.join(process.cwd(), 'examples');
+    const examplesDir = path.join(repoRoot, 'examples');
     const showOutput = await runCommand(
       (program) => examplesCommand(program),
       ['examples', '--show', 'mcp-server/AGENTS.md']
