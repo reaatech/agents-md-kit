@@ -37,7 +37,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Save pnpm store
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.local/share/pnpm/store
@@ -66,7 +66,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Restore dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.local/share/pnpm/store
@@ -98,7 +98,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Restore dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.local/share/pnpm/store
@@ -130,7 +130,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Restore dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.local/share/pnpm/store
@@ -162,7 +162,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Restore dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.local/share/pnpm/store
@@ -194,7 +194,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Restore dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.local/share/pnpm/store
@@ -241,7 +241,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Restore dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.local/share/pnpm/store
@@ -281,7 +281,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Restore dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.local/share/pnpm/store
