@@ -21,7 +21,7 @@ afterEach(async () => {
 
 describe('CLI commands', () => {
   it('runs lint with json output', async () => {
-    const examplePath = path.join(process.cwd(), 'examples', 'gallery', 'mcp-server', 'AGENTS.md');
+    const examplePath = path.join(process.cwd(), 'examples', 'mcp-server', 'AGENTS.md');
     const output = await runCommand(
       (program) => lintCommand(program),
       ['lint', examplePath, '--format', 'json']
@@ -85,7 +85,7 @@ describe('CLI commands', () => {
   });
 
   it('shows and copies examples', async () => {
-    const examplesDir = path.join(process.cwd(), 'examples/gallery');
+    const examplesDir = path.join(process.cwd(), 'examples');
     const showOutput = await runCommand(
       (program) => examplesCommand(program),
       ['examples', '--show', 'mcp-server/AGENTS.md']

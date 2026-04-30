@@ -39,6 +39,7 @@
     "@reaatech/agents-markdown-parser": "workspace:*"
   },
   "devDependencies": {
+    "@reaatech/agents-markdown-linter": "workspace:*",
     "tsup": "^8.4.0",
     "typescript": "~5.8.3",
     "vitest": "^3.1.1"

@@ -6,7 +6,7 @@ const execFileAsync = promisify(execFile);
 
 describe('CLI entry point', () => {
   it('outputs version via --version flag', async () => {
-    const { stdout } = await execFileAsync('node', ['dist/src/cli.js', '--version'], {
+    const { stdout } = await execFileAsync('node', ['packages/cli/dist/cli.js', '--version'], {
       cwd: process.cwd(),
       timeout: 15000,
     });
@@ -14,7 +14,7 @@ describe('CLI entry point', () => {
   });
 
   it('outputs help via --help flag', async () => {
-    const { stdout } = await execFileAsync('node', ['dist/src/cli.js', '--help'], {
+    const { stdout } = await execFileAsync('node', ['packages/cli/dist/cli.js', '--help'], {
       cwd: process.cwd(),
       timeout: 15000,
     });
@@ -25,7 +25,7 @@ describe('CLI entry point', () => {
 
   it('handles unknown commands with error exit code', async () => {
     try {
-      await execFileAsync('node', ['dist/src/cli.js', 'nonexistent-command'], {
+      await execFileAsync('node', ['packages/cli/dist/cli.js', 'nonexistent-command'], {
         cwd: process.cwd(),
         timeout: 15000,
       });
