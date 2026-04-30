@@ -33,10 +33,10 @@ jobs:
         run: pnpm run build
 
       - name: Lint own AGENTS.md
-        run: pnpm exec agents-md-kit lint AGENTS.md
+        run: node packages/cli/dist/cli.js lint AGENTS.md
 
       - name: Lint examples
-        run: pnpm exec agents-md-kit lint examples/
+        run: node packages/cli/dist/cli.js lint examples/
 
       - name: Validate own AGENTS.md (strict)
-        run: pnpm exec agents-md-kit validate AGENTS.md
+        run: node packages/cli/dist/cli.js validate AGENTS.md
