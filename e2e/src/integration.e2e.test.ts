@@ -32,10 +32,7 @@ describe('Integration Tests', () => {
 
   describe('End-to-end linting flow', () => {
     it('should lint a valid AGENTS.md file', async () => {
-      const content = readFileSync(
-        join(rootDir, 'examples', 'mcp-server', 'AGENTS.md'),
-        'utf-8'
-      );
+      const content = readFileSync(join(rootDir, 'examples', 'mcp-server', 'AGENTS.md'), 'utf-8');
       const document = await parseMarkdown(content, 'AGENTS.md');
       const result = runLintRules(document);
 
@@ -59,10 +56,7 @@ describe('Integration Tests', () => {
 
   describe('End-to-end validation flow', () => {
     it('should validate a valid AGENTS.md file', async () => {
-      const content = readFileSync(
-        join(rootDir, 'examples', 'mcp-server', 'AGENTS.md'),
-        'utf-8'
-      );
+      const content = readFileSync(join(rootDir, 'examples', 'mcp-server', 'AGENTS.md'), 'utf-8');
       const document = await parseMarkdown(content, 'AGENTS.md');
       const result = validate(document, { strict: false });
 
