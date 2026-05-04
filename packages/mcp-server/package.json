@@ -42,7 +42,7 @@
     "@reaatech/agents-markdown-reporter": "workspace:*",
     "@reaatech/agents-markdown-scaffold": "workspace:*",
     "@reaatech/agents-markdown-validator": "workspace:*",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "tsup": "^8.4.0",
