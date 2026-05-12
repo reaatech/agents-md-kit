@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/reaatech/agents-md-kit#readme",
   "scripts": {
-    "build": "turbo run build",
+    "build": "pnpm install && turbo run build",
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",
     "lint": "biome check .",
