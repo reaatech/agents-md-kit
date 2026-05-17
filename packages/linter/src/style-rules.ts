@@ -4,8 +4,8 @@
  * Note: registerRule is imported for side effects (rule registration)
  */
 
-import { registerRule } from './rules-engine.js';
 import type { LintRule } from './rules-engine.js';
+import { registerRule } from './rules-engine.js';
 
 /**
  * Rule: heading-order
