@@ -4,24 +4,24 @@
 
 export {
   reportLintResult,
-  reportValidationResult,
   reportScaffoldResult,
+  reportValidationResult,
 } from './console-reporter.js';
 export {
-  lintToJson,
-  validationToJson,
-  reportLintResult as reportJsonLintResult,
-  reportValidationResult as reportJsonValidationResult,
-} from './json-reporter.js';
+  generateHtmlReport,
+  reportLintResult as reportHtmlLintResult,
+  writeHtmlReport,
+} from './html-reporter.js';
 export type { LintJsonOutput, ValidationJsonOutput } from './json-reporter.js';
 export {
+  lintToJson,
+  reportLintResult as reportJsonLintResult,
+  reportValidationResult as reportJsonValidationResult,
+  validationToJson,
+} from './json-reporter.js';
+export {
   reportLintAsMarkdown,
-  reportValidationAsMarkdown,
   reportLintResult as reportMarkdownLintResult,
+  reportValidationAsMarkdown,
   reportValidationResult as reportMarkdownValidationResult,
 } from './markdown-reporter.js';
-export {
-  generateHtmlReport,
-  writeHtmlReport,
-  reportLintResult as reportHtmlLintResult,
-} from './html-reporter.js';

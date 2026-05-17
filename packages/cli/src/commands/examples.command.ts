@@ -2,7 +2,7 @@
  * Examples command - list and show example AGENTS.md and SKILL.md files
  */
 
-import { copyFile, mkdir, readFile, readdir } from 'node:fs/promises';
+import { copyFile, mkdir, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { Command } from 'commander';
 
