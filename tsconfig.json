@@ -30,7 +30,9 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "allowUnusedLabels": false,
-    "allowUnreachableCode": false
+    "allowUnreachableCode": false,
+    "ignoreDeprecations": "6.0",
+    "types": ["node"]
   },
   "exclude": ["node_modules", "dist", "coverage", ".turbo"]
 }
