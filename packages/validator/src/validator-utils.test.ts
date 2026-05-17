@@ -1,5 +1,5 @@
-import { AgentsMdFrontmatterSchema, SkillMdFrontmatterSchema } from '@reaatech/agents-markdown';
 import type { ValidationResult } from '@reaatech/agents-markdown';
+import { AgentsMdFrontmatterSchema, SkillMdFrontmatterSchema } from '@reaatech/agents-markdown';
 import { describe, expect, it } from 'vitest';
 import {
   createErrorReport,

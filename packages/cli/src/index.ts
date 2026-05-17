@@ -1,16 +1,16 @@
 export {
-  parseFile,
-  lintFile,
-  lintDirectory,
-  validateFile,
-  validateDirectory,
-  scaffoldAgent,
-  applyFixesToFile,
   applyFixes,
-  getFixableRules,
+  applyFixesToFile,
   filterLintResult,
   findMarkdownFiles,
+  getFixableRules,
+  lintDirectory,
+  lintFile,
+  parseFile,
   pathIsDirectory,
+  scaffoldAgent,
+  validateDirectory,
+  validateFile,
 } from './cli-utils.js';
 
 export const VERSION = '1.0.0';

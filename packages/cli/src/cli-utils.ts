@@ -2,7 +2,7 @@
  * CLI utility functions that wrap core modules with file-based operations
  */
 
-import { readFile, readdir, stat } from 'node:fs/promises';
+import { readdir, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import type {
   AgentsMdDocument,
@@ -12,8 +12,7 @@ import type {
   SkillMdDocument,
   ValidationResult,
 } from '@reaatech/agents-markdown';
-import { getAutoFixableRules, runAutoFix } from '@reaatech/agents-markdown-linter';
-import { runLintRules } from '@reaatech/agents-markdown-linter';
+import { getAutoFixableRules, runAutoFix, runLintRules } from '@reaatech/agents-markdown-linter';
 import { parseMarkdown } from '@reaatech/agents-markdown-parser';
 import {
   type GenerateResult,
