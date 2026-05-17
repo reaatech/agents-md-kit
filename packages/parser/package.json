@@ -40,7 +40,7 @@
     "remark-frontmatter": "^5.0.0",
     "remark-parse": "^11.0.0",
     "unified": "^11.0.4",
-    "yaml": "^2.4.0"
+    "yaml": "^2.8.4"
   },
   "devDependencies": {
     "@types/mdast": "^4.0.0",
