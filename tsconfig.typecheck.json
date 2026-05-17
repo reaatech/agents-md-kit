@@ -1,7 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@reaatech/agents-markdown": ["./packages/agents-markdown/src/index.ts"],
       "@reaatech/agents-markdown-parser": ["./packages/parser/src/index.ts"],
