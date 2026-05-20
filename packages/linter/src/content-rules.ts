@@ -2,8 +2,8 @@
  * Content linting rules for AGENTS.md and SKILL.md files
  */
 
-import { registerRule } from './rules-engine.js';
 import type { LintRule } from './rules-engine.js';
+import { registerRule } from './rules-engine.js';
 
 /**
  * Rule: empty-section

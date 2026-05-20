@@ -1,52 +1,50 @@
 export const VERSION = '1.0.0';
 
 export type {
-  Severity,
+  AgentsMdDocument,
+  AgentType,
+  CodeBlock,
   ErrorLocation,
   Finding,
-  ParsedFrontmatter,
-  Section,
-  MarkdownTable,
-  CodeBlock,
-  AgentsMdDocument,
-  SkillMdDocument,
-  ValidationResult,
   LintResult,
+  MarkdownTable,
+  OutputFormat,
+  ParsedFrontmatter,
+  RuleDefinition,
   ScaffoldConfig,
   ScaffoldSkillConfig,
-  RuleDefinition,
-  AgentType,
+  Section,
+  Severity,
+  SkillMdDocument,
   SkillType,
-  OutputFormat,
+  ValidationResult,
 } from './domain.js';
-
-export {
-  AgentsMdFrontmatterSchema,
-  SkillMdFrontmatterSchema,
-  SectionSchema,
-  AgentsMdSchema,
-  SkillMdSchema,
-  McpToolSchema,
-  SkillReferenceSchema,
-} from './schemas.js';
-
 export type {
   AgentsMdFrontmatter,
-  SkillMdFrontmatter,
-  SchemaSection,
   AgentsMdValidation,
-  SkillMdValidation,
   McpTool,
+  SchemaSection,
+  SkillMdFrontmatter,
+  SkillMdValidation,
   SkillReference,
+} from './schemas.js';
+export {
+  AgentsMdFrontmatterSchema,
+  AgentsMdSchema,
+  McpToolSchema,
+  SectionSchema,
+  SkillMdFrontmatterSchema,
+  SkillMdSchema,
+  SkillReferenceSchema,
 } from './schemas.js';
 
 export {
   assertNever,
+  debounce,
   delay,
+  groupBy,
+  normalizeLineEndings,
   randomId,
   sanitizePath,
-  normalizeLineEndings,
   truncate,
-  debounce,
-  groupBy,
 } from './utils.js';

@@ -1,6 +1,6 @@
 import pino from 'pino';
 import { describe, expect, it } from 'vitest';
-import { LogLevel, info, log, setLogger } from './logger.js';
+import { info, LogLevel, log, setLogger } from './logger.js';
 import { MetricsManager, recordOperation } from './metrics.js';
 
 describe('observability runtime helpers', () => {

@@ -2,12 +2,12 @@
  * Linter module barrel export
  */
 
-export { runLintRules, registerRule, getRegisteredRules } from './rules-engine.js';
 export type { LintRule } from './rules-engine.js';
+export { getRegisteredRules, registerRule, runLintRules } from './rules-engine.js';
 
 // Import rule files to register all rules
 import './style-rules.js';
 import './content-rules.js';
 import './best-practice-rules.js';
 
-export { runAutoFix, getAutoFixableRules } from './auto-fix.js';
+export { getAutoFixableRules, runAutoFix } from './auto-fix.js';
