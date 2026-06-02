@@ -48,7 +48,7 @@
     "@reaatech/agents-markdown-validator": "workspace:*",
     "@reaatech/agents-markdown-observability": "workspace:*",
     "cli-progress": "^3.12.0",
-    "commander": "^14.0.3"
+    "commander": "^15.0.0"
   },
   "devDependencies": {
     "@types/cli-progress": "^3.11.5",
