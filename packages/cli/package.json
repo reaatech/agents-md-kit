@@ -42,11 +42,11 @@
   "dependencies": {
     "@reaatech/agents-markdown": "workspace:*",
     "@reaatech/agents-markdown-linter": "workspace:*",
+    "@reaatech/agents-markdown-observability": "workspace:*",
     "@reaatech/agents-markdown-parser": "workspace:*",
     "@reaatech/agents-markdown-reporter": "workspace:*",
     "@reaatech/agents-markdown-scaffold": "workspace:*",
     "@reaatech/agents-markdown-validator": "workspace:*",
-    "@reaatech/agents-markdown-observability": "workspace:*",
     "cli-progress": "^3.12.0",
     "commander": "^14.0.3"
   },
@@ -54,6 +54,6 @@
     "@types/cli-progress": "^3.11.5",
     "tsup": "^8.4.0",
     "typescript": "~6.0.3",
-    "vitest": "^3.1.1"
+    "vitest": "^4.1.8"
   }
 }
