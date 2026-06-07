@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/agents-markdown-parser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Markdown AST parser with frontmatter extraction for agents-markdown ecosystem",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
   "license": "MIT",

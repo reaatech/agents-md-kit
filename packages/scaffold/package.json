@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/agents-markdown-scaffold",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Template-based file generator for agents-markdown ecosystem",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
   "license": "MIT",
