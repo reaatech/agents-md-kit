@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/agents-markdown-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI tool for agents-markdown ecosystem",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
   "license": "MIT",

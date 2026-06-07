@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/agents-markdown-linter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Linting rules engine for AGENTS.md and SKILL.md files",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
   "license": "MIT",

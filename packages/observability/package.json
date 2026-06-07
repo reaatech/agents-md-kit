@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/agents-markdown-observability",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Structured logging, tracing, and metrics for agents-markdown ecosystem",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
   "license": "MIT",
