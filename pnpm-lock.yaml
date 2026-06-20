@@ -70,6 +70,8 @@ importers:
 
   examples/router: {}
 
+  examples/social-listening: {}
+
   packages/agents-markdown:
     dependencies:
       zod:
