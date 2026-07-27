@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@reaatech/agents-markdown": "workspace:*",
-    "chalk": "^5.4.0"
+    "chalk": "^6.0.0"
   },
   "devDependencies": {
     "tsup": "^8.4.0",
